@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +16,12 @@ public class DragUI : MonoBehaviour, IDragHandler
 
 
     public Transform lastTouch;
+
+    [Header("Addons")]
+    public bool isTool;
+    private bool cloneSpawn = false;
+    public GameObject clonePrefab;
+    private GameObject cloneRef;
 
     private void Start()
     {
@@ -38,27 +45,51 @@ public class DragUI : MonoBehaviour, IDragHandler
 
     }
 
-   public void OnMouseDown()
+    public void OnMouseDown()
     {
-        FindObjectOfType<SlideManager>().currentSlide = transform.GetSiblingIndex(); 
+        FindObjectOfType<SlideManager>().currentSlide = transform.GetSiblingIndex();
         FindObjectOfType<SlideManager>().ReloadSlide();
     }
 
-        public void OnDrag(PointerEventData data)
+    public void OnDrag(PointerEventData data)
     {
-        if (FindObjectOfType<SlideManager>().currentSlide != transform.GetSiblingIndex())
+        if (!isTool)
         {
-            FindObjectOfType<SlideManager>().currentSlide = transform.GetSiblingIndex();
-            FindObjectOfType<SlideManager>().ReloadSlide();
-        }
+            if (FindObjectOfType<SlideManager>().currentSlide != transform.GetSiblingIndex())
+            {
+                FindObjectOfType<SlideManager>().currentSlide = transform.GetSiblingIndex();
+                FindObjectOfType<SlideManager>().ReloadSlide();
+            }
 
-        originalIndex = transform.GetSiblingIndex();
-        moving = true;
-        Vector2 pos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvasOfImageToMove.transform as RectTransform, data.position, parentCanvasOfImageToMove.worldCamera, out pos);
-        Vector3 movePos = parentCanvasOfImageToMove.transform.TransformPoint(pos);
-        imageToMove.transform.position = new Vector3(imageToMove.transform.position.x, movePos.y, imageToMove.transform.position.z);
-        GetComponent<BoxCollider>().isTrigger = true;
+            originalIndex = transform.GetSiblingIndex();
+            moving = true;
+            Vector2 pos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvasOfImageToMove.transform as RectTransform, data.position, parentCanvasOfImageToMove.worldCamera, out pos);
+            Vector3 movePos = parentCanvasOfImageToMove.transform.TransformPoint(pos);
+            imageToMove.transform.position = new Vector3(imageToMove.transform.position.x, movePos.y, imageToMove.transform.position.z);
+            GetComponent<BoxCollider>().isTrigger = true;
+        }
+        else
+        {
+
+            originalIndex = transform.GetSiblingIndex();
+            moving = true;
+            Vector2 pos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvasOfImageToMove.transform as RectTransform, data.position, parentCanvasOfImageToMove.worldCamera, out pos);
+            Vector3 movePos = parentCanvasOfImageToMove.transform.TransformPoint(pos);
+            imageToMove.transform.position = new Vector3(movePos.x, movePos.y, imageToMove.transform.position.z);
+
+            if (!cloneSpawn)
+            {
+                cloneRef = Instantiate(clonePrefab, this.transform.root);
+
+                //Set Image
+                cloneRef.GetComponent<Image>().sprite = transform.Find("ToolMainButton").GetComponent<Image>().sprite; ;
+                cloneSpawn = true;
+                Debug.Log(cloneRef.GetComponent<Image>().sprite.name);
+            }
+            cloneRef.transform.position = new Vector3(movePos.x, movePos.y, imageToMove.transform.position.z);
+        }
 
     }
 
@@ -77,7 +108,7 @@ public class DragUI : MonoBehaviour, IDragHandler
     //        }
     //    }
     //}
-public void OnTriggerEnter(Collider collision)
+    public void OnTriggerEnter(Collider collision)
     {
         //Debug.Log("Touched");
         if (!moving)
@@ -95,7 +126,7 @@ public void OnTriggerEnter(Collider collision)
     {
         if (moving)
         {
-            if(Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonUp(0))
             {
                 MouseUp();
             }
@@ -107,80 +138,94 @@ public void OnTriggerEnter(Collider collision)
         moving = false;
         Debug.Log("Released mouse");
 
-        if (!lastTouch)
+        if (!isTool)
+        {
+            if (!lastTouch)
+            {
+                gameObject.SetActive(false);
+                gameObject.SetActive(true);
+                transform.SetSiblingIndex(originalIndex);
+
+                return;
+            }
+
+            int oldIndex = originalIndex;
+            int newIndex = 0;
+            int here = 0;
+
+            if (originalIndex > lastTouch.GetSiblingIndex())
+            {
+                if (lastTouch.position.y > transform.position.y)
+                {
+
+                    here = lastTouch.GetSiblingIndex() + 1;
+                    Debug.Log("move down to " + here);
+
+
+                }
+                else
+                {
+                    here = lastTouch.GetSiblingIndex();
+                    Debug.Log("move up to " + here);
+
+
+                }
+            }
+            else
+            {
+                if (lastTouch.position.y > transform.position.y)
+                {
+
+                    here = lastTouch.GetSiblingIndex();
+                    Debug.Log("move down to " + here);
+
+                }
+                else
+                {
+                    here = lastTouch.GetSiblingIndex() + 1;
+                    Debug.Log("move up to " + here);
+
+                }
+            }
+
+
+            if (here >= transform.parent.childCount)
+            {
+                transform.SetAsLastSibling();
+                Debug.Log("Set as last");
+                newIndex = transform.parent.childCount - 1;
+            }
+            else if (here <= 0)
+            {
+                transform.SetAsFirstSibling();
+                Debug.Log("Set as first");
+            }
+            else
+            {
+                transform.SetSiblingIndex(here);
+                newIndex = here;
+            }
+
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
+
+            lastTouch = null;
+
+            FindObjectOfType<SlideManager>().MovedSlides(oldIndex, newIndex);
+
+        }
+        else
         {
             gameObject.SetActive(false);
             gameObject.SetActive(true);
             transform.SetSiblingIndex(originalIndex);
-            
-            return;
         }
 
-        int oldIndex = originalIndex;
-        int newIndex = 0;
-        int here = 0;
-
-        if (originalIndex > lastTouch.GetSiblingIndex())
+        if (cloneSpawn)
         {
-            if (lastTouch.position.y > transform.position.y)
-            {
-
-                 here = lastTouch.GetSiblingIndex() +1;
-                Debug.Log("move down to " + here);
-
-
-            }
-            else
-            {
-                 here = lastTouch.GetSiblingIndex();
-                Debug.Log("move up to " + here);
-
-
-            }
+            Destroy(cloneRef);
+            cloneSpawn = false;
         }
-        else
-        {
-            if (lastTouch.position.y > transform.position.y)
-            {
-
-                 here = lastTouch.GetSiblingIndex();
-                Debug.Log("move down to " + here);
-
-            }
-            else
-            {
-                 here = lastTouch.GetSiblingIndex() + 1;
-                Debug.Log("move up to " + here);
-
-            }
-        }
-
-
-        if (here >= transform.parent.childCount)
-        {
-            transform.SetAsLastSibling();
-            Debug.Log("Set as last");
-            newIndex = transform.parent.childCount - 1;
-        }
-        else if (here <= 0)
-        {
-            transform.SetAsFirstSibling();
-            Debug.Log("Set as first");
-        }
-        else
-        {
-            transform.SetSiblingIndex(here);
-            newIndex = here;
-        }
-
-        gameObject.SetActive(false);
-        gameObject.SetActive(true);
-
-        lastTouch = null;
-
-        FindObjectOfType<SlideManager>().MovedSlides(oldIndex, newIndex);
-
     }
-
 
 }

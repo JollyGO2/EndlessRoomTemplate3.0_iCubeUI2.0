@@ -32,7 +32,7 @@ public class SlideManager : MonoBehaviour
     }
 
     bool firstaction;
-    public  bool skipaction;
+    public bool skipaction;
 
     [Header("Showing Slides data QUESTION")]
 
@@ -86,7 +86,10 @@ public class SlideManager : MonoBehaviour
     [Header("Audio Customization")]
     public GameObject removeBGMButton;
     public TMP_Text bgmText;
-    
+
+    [Header("Addons")]
+    public GameObject dubWallButton;
+    public GameObject AnswerTypeDropDown;
 
 
     private void Start()
@@ -103,6 +106,8 @@ public class SlideManager : MonoBehaviour
             imageChoices.transform.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + ".";
             bothChoices.transform.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + ".";
         }
+        dubWallButton.SetActive(false);
+        AnswerTypeDropDown.SetActive(false);
     }
 
 
@@ -136,7 +141,7 @@ public class SlideManager : MonoBehaviour
 
     //question saving
     public void SaveQN(TMP_InputField i)
-    {   
+    {
         if (slidesList[currentSlide].questionText != i.text)
         {
             UndoRedo.instance.Action();
@@ -159,7 +164,7 @@ public class SlideManager : MonoBehaviour
 
         for (int t = 0; t < slidesList[currentSlide].textAnswers.Count; t++)
         {
-            if (slidesList[currentSlide].textAnswers[t] != o.transform.GetChild(t).GetComponentInChildren<TMP_InputField>().text )
+            if (slidesList[currentSlide].textAnswers[t] != o.transform.GetChild(t).GetComponentInChildren<TMP_InputField>().text)
             {
                 UndoRedo.instance.Action();
             }
@@ -309,7 +314,7 @@ public class SlideManager : MonoBehaviour
 
     public void AddSlide(bool blank)
     {
-        if (slidesList.Count>=99)
+        if (slidesList.Count >= 99)
         {
             return;
         }
@@ -332,7 +337,7 @@ public class SlideManager : MonoBehaviour
             }
 
             currentSlide = slidesList.Count - 1;
-            
+
         }
 
         Button b = Instantiate(slideButtonsPrefab, slideButtonsHolder.transform).GetComponentInChildren<Button>();
@@ -342,7 +347,10 @@ public class SlideManager : MonoBehaviour
         upButton.SetActive(true);
 
         SlidesData.instance.DataUpdate(this);
-        ReloadSlide();
+
+        //ReloadSlide();
+        ChangeAnsType(2);
+        ChangeAnswerNum(3);
     }
 
     public void UpSlide()
@@ -381,6 +389,11 @@ public class SlideManager : MonoBehaviour
 
     public void ChangeAns(TMP_Dropdown d)
     {
+        ChangeAnsType(d.value);
+    }
+
+    public void ChangeAnsType(int type)
+    {
         skipaction = true;
         UndoRedo.instance.Action();
 
@@ -398,7 +411,7 @@ public class SlideManager : MonoBehaviour
         {
             Debug.Log("aaa3 " + currentSlide);
         }
-        switch (d.value)
+        switch (type)
         {
             case 0:
                 man.slideType = Slides.Type.text;
@@ -432,12 +445,17 @@ public class SlideManager : MonoBehaviour
 
     public void AnswerNum(TMP_Dropdown d)
     {
+        ChangeAnswerNum(d.value);
+    }
+
+    private void ChangeAnswerNum(int num)
+    {
         if (!skipaction)
         {
             UndoRedo.instance.Action();
         }
 
-        switch (d.value)
+        switch (num)
         {
 
             case 0:
@@ -445,13 +463,13 @@ public class SlideManager : MonoBehaviour
                 break;
 
             case 1:
-                slidesList[currentSlide].choiceCount = 4;
+                slidesList[currentSlide].choiceCount = 3;
                 break;
             case 2:
-                slidesList[currentSlide].choiceCount = 6;
+                slidesList[currentSlide].choiceCount = 4;
                 break;
             case 3:
-                slidesList[currentSlide].choiceCount = 8;
+                slidesList[currentSlide].choiceCount = 5;
                 break;
         }
 
@@ -480,7 +498,7 @@ public class SlideManager : MonoBehaviour
 
         while (man.correctAnswers.Count > man.choiceCount)
         {
-            man.correctAnswers.RemoveAt(man.correctAnswers.Count-1);
+            man.correctAnswers.RemoveAt(man.correctAnswers.Count - 1);
         }
 
         while (man.correctAnswers.Count < man.choiceCount)
@@ -554,7 +572,7 @@ public class SlideManager : MonoBehaviour
                 }
                 else
                 {
-                    
+
                     o.transform.GetChild(i).gameObject.SetActive(false);
                     o.transform.GetChild(i).GetChild(1).GetComponent<Toggle>().isOn = false;
                 }
@@ -615,7 +633,7 @@ public class SlideManager : MonoBehaviour
 
     public void ReloadSlide()
     {
-        while (slideButtonsList.Count<slidesList.Count)
+        while (slideButtonsList.Count < slidesList.Count)
         {
             skipaction = true; Debug.Log("skip action reload addslide");
             AddSlide(slidesList[slideButtonsList.Count].slideType == Slides.Type.blank);
@@ -756,7 +774,7 @@ public class SlideManager : MonoBehaviour
             IfBlank(man);
         }
 
-        ChangeNavButtons();
+        //ChangeNavButtons();
 
 
 
@@ -847,11 +865,11 @@ public class SlideManager : MonoBehaviour
         UndoRedo.instance.Action();
 
         Debug.Log("moving slides for " + name);
-        Debug.Log("From " + whichMoved + " To "  + toWhere);
+        Debug.Log("From " + whichMoved + " To " + toWhere);
         Slides slide = slidesList[whichMoved];
         List<Slides> tempSlideList = new List<Slides>();
 
-        for (int i = 0; i<slidesList.Count; i++)
+        for (int i = 0; i < slidesList.Count; i++)
         {
             if (i == toWhere)
             {
@@ -894,7 +912,7 @@ public class SlideManager : MonoBehaviour
         Button but = slideButtonsList[whichMoved];
         List<Button> tempButtonList = new List<Button>();
 
-        
+
         for (int i = 0; i < slideButtonsList.Count; i++)
         {
             if (i == toWhere)

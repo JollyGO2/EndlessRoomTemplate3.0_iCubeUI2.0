@@ -96,7 +96,7 @@ public class PublishPreview : MonoBehaviour
 
     public void Preview()
     {
-
+        
         foreach (GameObject o in turnOffForPreview)
         {
             o.SetActive(false);

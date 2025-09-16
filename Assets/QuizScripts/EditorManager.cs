@@ -39,11 +39,29 @@ public class EditorManager : MonoBehaviour
         {
             threeWallChoosing.SetActive(true);
             fourWallChoosing.SetActive(false);
+            // Iterate through each child Transform
+            foreach (Transform childTransform in threeWallChoosing.transform)
+            {
+                // Access the GameObject of the child Transform
+                GameObject childGameObject = childTransform.gameObject;
+
+                // Perform actions with the child GameObject
+                childGameObject.SetActive(false);
+            }
         }
         else if (dataPersistence.wallsConfig == DataAcrossScenes.WallsConfig.Four)
         {
             threeWallChoosing.SetActive(false);
             fourWallChoosing.SetActive(true);
+            // Iterate through each child Transform
+            foreach (Transform childTransform in fourWallChoosing.transform)
+            {
+                // Access the GameObject of the child Transform
+                GameObject childGameObject = childTransform.gameObject;
+
+                // Perform actions with the child GameObject
+                childGameObject.SetActive(false);
+            }
         }
 
         titleText.text = DataAcrossScenes.instance.projectName;
@@ -140,7 +158,7 @@ public class EditorManager : MonoBehaviour
 
         string moveUserFileFrom = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName, originalName + ".quiz");
         string moveUserFileTo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName, DataAcrossScenes.instance.projectName + ".quiz");
-        
+
         if (!File.Exists(moveUserFileFrom))
         {
             Debug.LogError(moveUserFileFrom + " does not exist");
@@ -176,7 +194,7 @@ public class EditorManager : MonoBehaviour
 
     public void LoadAudioClip()
     {
-        
+
         if (String.IsNullOrEmpty(bgmFileName))
         {
             FindObjectOfType<WallManager>().AudioCheck();

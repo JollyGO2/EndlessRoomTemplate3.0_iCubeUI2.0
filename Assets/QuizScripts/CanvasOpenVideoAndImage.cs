@@ -13,9 +13,10 @@ using System.Web;
 using System;
 
 [RequireComponent(typeof(Button))]
-public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler {
+public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler
+{
     public GameObject targetOutput;
-    public enum MediaType { Answer, Blank, BG, Thumbnail};
+    public enum MediaType { Answer, Blank, BG, Thumbnail };
     public MediaType mediaType;
 
     public SlideManager slideManager;
@@ -42,41 +43,48 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler {
     //
     public void OnPointerDown(PointerEventData eventData) { }
 
-    void Start() {
+    void Start()
+    {
         var button = GetComponent<Button>();
         button.onClick.AddListener(OnClick);
     }
 
-    private void OnClick() {
+    private void OnClick()
+    {
 
 
         UndoRedo.instance.Action();
 
-        var extensions = new[] { new ExtensionFilter("Image File", "png", "jpg", "jpeg"), new ExtensionFilter("Video File", "mp4")};
+        var extensions = new[] { new ExtensionFilter("Image File", "png", "jpg", "jpeg"), new ExtensionFilter("Video File", "mp4") };
         var paths = StandaloneFileBrowser.OpenFilePanel("Title", "", extensions, false);
 
 
-        if (paths.Length > 0) {
-
-
-            string checkPath = HttpUtility.UrlDecode(new System.Uri(paths[0]).AbsoluteUri);
-
-
-            Debug.Log(checkPath);
-
-            if (FilePathHasInvalidChars(checkPath))
-            {
-                if (FindObjectOfType<EditorManager>())
-                {
-                    FindObjectOfType<EditorManager>().urlFailWarning.SetActive(true);
-                }
-                return;
-            }
-
-            OutputRoutine(checkPath);
+        if (paths.Length > 0)
+        {
+            TestPath(paths[0]);
         }
+
     }
 #endif
+
+    public void TestPath(string pathToCheck)
+    {
+        string checkPath = HttpUtility.UrlDecode(new System.Uri(pathToCheck).AbsoluteUri);
+
+
+        Debug.Log(checkPath);
+
+        if (FilePathHasInvalidChars(checkPath))
+        {
+            if (FindObjectOfType<EditorManager>())
+            {
+                FindObjectOfType<EditorManager>().urlFailWarning.SetActive(true);
+            }
+            return;
+        }
+
+        OutputRoutine(checkPath);
+    }
 
     public static bool FilePathHasInvalidChars(string path)
     {
@@ -113,7 +121,7 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler {
 
     private void OutputRoutine(string url)
     {
-        
+
 
         if (url.Contains("%"))
         {
@@ -155,6 +163,7 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler {
         else if (mediaType == MediaType.Answer)
         {
             Debug.Log("Assigning media to an answer");
+            Debug.Log("File name: " + fileName);
             slideManager.IMGANS(fileName, transform.parent.GetSiblingIndex());
         }
         else if (mediaType == MediaType.BG)
@@ -169,8 +178,8 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler {
 
 
 
-    }
+}
 
-    
+
 
 

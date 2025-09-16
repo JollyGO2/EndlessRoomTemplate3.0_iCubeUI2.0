@@ -76,7 +76,7 @@ public class QuizManager : MonoBehaviour
                 o.SetActive(false);
             }
 
-            navButtons[3].SetActive(true);
+            //navButtons[3].SetActive(true);
         }
 
         //adding an answertracker for each question slide
@@ -120,7 +120,10 @@ public class QuizManager : MonoBehaviour
         {
             return;
         }
+        PickRandomRoom(current);
+        ReloadQN();
 
+        /*
         if (current < slidesList.Count - 1)
         {
             current++;
@@ -133,6 +136,19 @@ public class QuizManager : MonoBehaviour
             Scoring();
 
         }
+        */
+    }
+    private void PickRandomRoom(int dontPick)
+    {
+        List<int> roomlist = new List<int>();
+        for (int i = 0; i < slidesList.Count; i++)
+        {
+            if (i != dontPick)
+            {
+                roomlist.Add(i);
+            }
+        }
+        current = roomlist[UnityEngine.Random.Range(0, roomlist.Count)];
     }
 
     public void QNBack()
@@ -287,12 +303,12 @@ public class QuizManager : MonoBehaviour
 
 
             //showing previously answered/saved answers
-
+            
             for (int n = 0; n < answerTracker[current].options.Count; n++)
             {
                 whole.transform.GetChild(n).GetComponentInChildren<Toggle>().isOn = answerTracker[current].options[n];
             }
-
+            
             //checking if previous answers maxed out correct answers
             int correct = 0;
             int correctcheck = 0;
@@ -370,6 +386,7 @@ public class QuizManager : MonoBehaviour
         }
 
 
+        /*
         //getting which top button(s) to use
         foreach (GameObject o in navButtons)
         {
@@ -399,6 +416,7 @@ public class QuizManager : MonoBehaviour
                 navButtons[1].SetActive(true);
             }
         }
+        */
     }
 
     public void Answer(Toggle b)
