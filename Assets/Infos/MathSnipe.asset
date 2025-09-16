@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b72f824437da202438348795fd1343b0, type: 3}
+  m_Name: MathSnipe
+  m_EditorClassIdentifier: 
+  title: Math Snipe
+  details: How well do you know your Math? Put your skills to the test and aim for
+    a perfect score.
+  popupThumbnail: {fileID: -2026451839, guid: e6e91a28465a84f419fea445159f54a0, type: 3}
+  font: {fileID: 0}
+  template: 0

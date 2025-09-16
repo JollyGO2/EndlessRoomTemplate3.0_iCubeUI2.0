@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b72f824437da202438348795fd1343b0, type: 3}
+  m_Name: HealthyFood
+  m_EditorClassIdentifier: 
+  title: Healthy Food Frenzy
+  details: Catch falling food items in this arcade game! Play alone or against another,
+    and learn which foods are healthier for you.
+  popupThumbnail: {fileID: 1817668667, guid: e6e91a28465a84f419fea445159f54a0, type: 3}
+  font: {fileID: 0}
+  template: 0
