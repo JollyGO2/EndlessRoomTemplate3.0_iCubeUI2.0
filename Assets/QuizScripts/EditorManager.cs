@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using System.IO;
 using System;
+using System.Xml.Schema;
 
 public class EditorManager : MonoBehaviour
 {
@@ -22,6 +23,9 @@ public class EditorManager : MonoBehaviour
     public GameObject namingFailWarning;
 
     public KeyCode undoKey;
+
+    [Header("Addon")]
+    public int totalTime;
 
     // Start is called before the first frame update
     void Start()
@@ -220,5 +224,10 @@ public class EditorManager : MonoBehaviour
         bgm = null;
         bgmFileName = null;
         FindObjectOfType<WallManager>().AudioCheck();
+    }
+
+    public void UpdateTimer(int time)
+    {
+
     }
 }

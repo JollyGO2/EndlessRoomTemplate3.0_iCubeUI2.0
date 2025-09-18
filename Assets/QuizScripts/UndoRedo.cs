@@ -21,6 +21,7 @@ public class UndoRedo : MonoBehaviour
         public int currentWall;
         public int currentSlide;
         public AudioClip bgmfile;
+        public int timer; //Addon feature
     }
 
     public List<SlideManager> allManagers;
@@ -84,6 +85,7 @@ public class UndoRedo : MonoBehaviour
         slot.currentWall = FindObjectOfType<WallManager>().current;
         slot.currentSlide = allManagers[slot.currentWall].currentSlide;
         slot.bgmfile = FindObjectOfType<EditorManager>().bgm;
+        slot.timer = FindObjectOfType<EditorManager>().totalTime;
 
         undobut.interactable = true;
         redobut.interactable = false;
@@ -142,6 +144,7 @@ public class UndoRedo : MonoBehaviour
 
     public void Undo()
     {
+        Debug.Log("Before undo Value of timer is: " + FindObjectOfType<EditorManager>().totalTime);
         Debug.Log("Undoing Action");
 
         
@@ -176,6 +179,7 @@ public class UndoRedo : MonoBehaviour
         slot.currentWall = FindObjectOfType<WallManager>().current;
         slot.currentSlide = allManagers[slot.currentWall].currentSlide;
         slot.bgmfile = FindObjectOfType<EditorManager>().bgm;
+        slot.timer = FindObjectOfType<EditorManager>().totalTime;
         redoStack.Add(slot);
         redobut.interactable = true;
         
@@ -237,11 +241,15 @@ public class UndoRedo : MonoBehaviour
             allManagers[0].RemoveAudio();
         }
 
+        FindObjectOfType<EditorManager>().totalTime = undid.timer; //Undo Time set
+        Debug.Log("After undo Value of timer is: " + FindObjectOfType<EditorManager>().totalTime);
+
         undoStack.RemoveAt(undoStack.Count - 1);
     }
 
     public void Redo()
     {
+        Debug.Log("Before Redo Value of timer is: " + FindObjectOfType<EditorManager>().totalTime);
         Debug.Log("Redoing action");
 
         if (redoStack.Count == 0)
@@ -274,6 +282,7 @@ public class UndoRedo : MonoBehaviour
         slot.currentWall = FindObjectOfType<WallManager>().current;
         slot.currentSlide = allManagers[slot.currentWall].currentSlide;
         slot.bgmfile = FindObjectOfType<EditorManager>().bgm;
+        slot.timer = FindObjectOfType<EditorManager>().totalTime;
         undoStack.Add(slot);
         undobut.interactable = true;
 
@@ -327,6 +336,9 @@ public class UndoRedo : MonoBehaviour
         {
             allManagers[0].RemoveAudio();
         }
+
+        FindObjectOfType<EditorManager>().totalTime = redid.timer; //redo Time set
+        Debug.Log("After Redo Value of timer is: " + FindObjectOfType<EditorManager>().totalTime);
 
         redoStack.RemoveAt(redoStack.Count - 1);
     }

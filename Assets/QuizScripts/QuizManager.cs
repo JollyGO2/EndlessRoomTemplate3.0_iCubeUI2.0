@@ -1,11 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System;
-using UnityEngine.Video;
 using System.IO;
+using System.Xml;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Video;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class QuizManager : MonoBehaviour
 {
@@ -56,7 +60,49 @@ public class QuizManager : MonoBehaviour
     public Sprite defaultSprite;
     public Image bgImage;
 
+    [Header("Addons")]
+    public TextMeshProUGUI ScoreText;
+    private int score = 0;
 
+    public TextMeshProUGUI TimerText;
+    private float timeRemaining = 0;
+    private bool startTimer = false;
+    public float totalTime = 10;
+    public int NumOfRoomsVisited { get; private set; }
+    public int correctVisits { get; private set; }
+
+    void Update()
+    {
+        if (startTimer)
+        {
+            if (timeRemaining > 0)
+            {
+                timeRemaining -= Time.deltaTime; // subtract time
+
+                TimerText.text = FormatTime(timeRemaining);
+            }
+            else
+            {
+                Debug.Log("Timer finished!");
+                Scoring();
+                StartTimer(false);
+            }
+        }
+    }
+
+    public string FormatTime(float timeInSeconds)
+    {
+        int minutes = Mathf.FloorToInt(timeInSeconds / 60f);
+        int seconds = Mathf.FloorToInt(timeInSeconds % 60f);
+
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    private void StartTimer(bool start)
+    {
+        startTimer = start;
+        timeRemaining = totalTime;
+    }
     public void Enable()
     {
 
@@ -94,14 +140,14 @@ public class QuizManager : MonoBehaviour
                     case 2:
                         answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false };
                         break;
+                    case 3:
+                        answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false, false};
+                        break;
                     case 4:
-                        answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false, false, false };
+                        answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false, false, false};
                         break;
-                    case 6:
-                        answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false, false, false, false, false };
-                        break;
-                    case 8:
-                        answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false, false, false, false, false, false, false };
+                    case 5:
+                        answerTracker[answerTracker.Count - 1].options = new List<bool> { false, false, false, false, false};
                         break;
                 }
 
@@ -111,18 +157,66 @@ public class QuizManager : MonoBehaviour
                 answerTracker[answerTracker.Count - 1].use = false;
             }
         }
+
+        ScoreText.transform.parent.gameObject.SetActive(true);
+        TimerText.transform.parent.gameObject.SetActive(true);
+        correctVisits = 0;
+        NumOfRoomsVisited = 0;
+        totalTime = FindObjectOfType<EditorManager>().totalTime;
+        StartTimer(true);
         ReloadQN();
     }
 
-    public void QNNext()
+    public void QNNext(GameObject thisSlotCalled)
     {
         if (slidesList.Count == 0)
         {
             return;
         }
+
+        int scoreModifier;
+        string t = thisSlotCalled.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text;
+
+        if (int.TryParse(t, out scoreModifier))
+        {
+            Debug.Log("Converted to int: " + scoreModifier);
+        }
+        else
+        {
+            Debug.LogWarning("Text is not a valid integer: " + t);
+            scoreModifier = 1; //Default to 1 if error
+        }
+
+        //Check with reference to index
+        int index = thisSlotCalled.transform.GetSiblingIndex();
+
+        if (answerTracker[current].options[index] && slidesList[current].correctAnswers[index])
+        {
+            Debug.Log("Answered correctly");
+            correctVisits++;
+
+            if (scoreModifier >= 0)
+            {
+                score += scoreModifier;
+            }
+        }
+        else if (answerTracker[current].options[index] && !slidesList[current].correctAnswers[index])
+        {
+            Debug.Log("Answered Wrong");
+            if (scoreModifier >= 0)
+            {
+                score -= scoreModifier;
+            }
+        }
+
+        NumOfRoomsVisited++;
+        UpdateScore(score);
+
+        //Pick Random Room
         PickRandomRoom(current);
         ReloadQN();
 
+        //Old Code
         /*
         if (current < slidesList.Count - 1)
         {
@@ -138,6 +232,33 @@ public class QuizManager : MonoBehaviour
         }
         */
     }
+    private void UpdateScore(int num)
+    {
+        //Formate Score
+        ScoreText.text = FormatLargeNumber(num);
+    }
+    private string FormatLargeNumber(long num)
+    {
+        bool isNegative = num < 0;
+
+        num = Math.Abs(num);
+
+        string toReturn = num.ToString();
+        if (num >= 1_000_000_000)
+            toReturn = (num / 1_000_000_000f).ToString("0.##") + "B";
+
+        else if (num >= 1_000_000)
+            toReturn = (num / 1_000_000f).ToString("0.##") + "M";
+
+        else if(num >= 1_000)
+            toReturn = (num / 1_000f).ToString("0.##") + "K";
+
+        if (isNegative)
+            toReturn = "-" + toReturn;
+
+        return toReturn;
+    }
+
     private void PickRandomRoom(int dontPick)
     {
         List<int> roomlist = new List<int>();
@@ -242,7 +363,7 @@ public class QuizManager : MonoBehaviour
 
                 if (mediaans.gameObject.activeInHierarchy)
                 {
-                    Transform mediaAnsHolder = mediaans.GetChild(i).GetChild(2);
+                    Transform mediaAnsHolder = mediaans.GetChild(i).GetChild(2).Find("ShowButton");
 
                     if (!String.IsNullOrEmpty(slidesList[current].videoAnswersPath[i]))
                     {
@@ -260,15 +381,21 @@ public class QuizManager : MonoBehaviour
                         {
                             StartCoroutine(MediaLoader.SetupImage(mediaAnsHolder, defaultSprite));
 
-                            whole.transform.GetChild(i).GetComponentInChildren<Toggle>().targetGraphic = mediaAnsHolder.GetComponent<Image>();
+                            //whole.transform.GetChild(i).GetComponentInChildren<Toggle>().targetGraphic = mediaAnsHolder.GetComponent<Image>();
+                            //whole.transform.GetChild(i).Find("Toggle").Find("ShowButton").GetComponent<Image>().sprite = mediaAnsHolder.GetComponent<Image>().sprite;
+                            //whole.transform.GetChild(i).Find("Toggle").Find("ShowButton").gameObject.SetActive(false);
                         }
 
                     }
+
                 }
+
+                mediaans.GetChild(i).GetChild(2).Find("ShowButton").gameObject.SetActive(false);
 
                 if (quizFinished)
                 {
                     whole.GetChild(i).GetComponentInChildren<Toggle>().interactable = false;
+
                 }
             }
 
@@ -385,35 +512,41 @@ public class QuizManager : MonoBehaviour
 
         }
 
-
+        //setting up navigation buttons
         /*
-        //getting which top button(s) to use
-        foreach (GameObject o in navButtons)
+        if (quizFinished)
         {
-            o.SetActive(false);
-        }
+            //ScoreText.transform.parent.gameObject.SetActive(false);
+            //TimerText.transform.parent.gameObject.SetActive(false);
 
-        //if only 1 slide, finish button
-        if (slidesList.Count == 1)
-        {
-            navButtons[3].SetActive(true);
-        }
-        else
-        {
-            if (current == 0)
+            //getting which top button(s) to use
+            foreach (GameObject o in navButtons)
             {
-                //if more than one slide and this is first, next button
-                navButtons[0].SetActive(true);
+                o.SetActive(false);
             }
-            else if (current == slidesList.Count - 1)
+
+            //if only 1 slide, finish button
+            if (slidesList.Count == 1)
             {
-                //if more than one slide and this is last, finish and back button
-                navButtons[2].SetActive(true);
+                navButtons[3].SetActive(true);
             }
             else
             {
-                //if more than one slide and this is not last, next and back button
-                navButtons[1].SetActive(true);
+                if (current == 0)
+                {
+                    //if more than one slide and this is first, next button
+                    navButtons[0].SetActive(true);
+                }
+                else if (current == slidesList.Count - 1)
+                {
+                    //if more than one slide and this is last, finish and back button
+                    navButtons[2].SetActive(true);
+                }
+                else
+                {
+                    //if more than one slide and this is not last, next and back button
+                    navButtons[1].SetActive(true);
+                }
             }
         }
         */
@@ -425,37 +558,6 @@ public class QuizManager : MonoBehaviour
         {
             return;
         }
-
-        int correct = 0;
-        int correctcheck = 0;
-
-        //if (b.isOn)
-        //{
-
-
-
-        for (int i = 0; i < answerTracker[current].options.Count; i++)
-        {
-            if (answerTracker[current].options[i] == true)
-            {
-                correct++;
-            }
-
-            if (slidesList[current].correctAnswers[i] == true)
-            {
-                correctcheck++;
-            }
-        }
-
-        //    if (correct >= correctcheck)
-        //    {
-        //        b.isOn = false;
-        //        return;
-        //    }
-        //}
-
-
-
 
         int check = 0;
 
@@ -478,15 +580,15 @@ public class QuizManager : MonoBehaviour
             }
         }
 
-        if (slidesList[current].correctAnswers[check])
+        if (slidesList[current].correctAnswers[check]) //Correct answer
         {
             Debug.Log("Correct ans");
         }
 
         answerTracker[current].options[check] = b.isOn;
 
-        correct = 0;
-        correctcheck = 0;
+        int correct = 0;
+        int correctcheck = 0;
 
         for (int i = 0; i < answerTracker[current].options.Count; i++)
         {
@@ -510,12 +612,38 @@ public class QuizManager : MonoBehaviour
         {
             foreach (Toggle t in o.GetComponentsInChildren<Toggle>())
             {
+
                 if (!t.isOn)
                 {
-                    t.interactable = false;
+                    //t.interactable = false;
 
                     t.targetGraphic.color = new Color(0.75f, 0.75f, 0.75f);
 
+                    //Hide button
+                    OnOffSlotToggle(false, t);
+                    if (t == b)
+                    {
+                        EventSystem.current.SetSelectedGameObject(null);
+                    }
+                }
+                else
+                {
+                    if(t != b)
+                    {
+                        t.targetGraphic.color = new Color(0.75f, 0.75f, 0.75f);
+
+                        t.SetIsOnWithoutNotify(false);
+                        answerTracker[current].options[t.transform.parent.GetSiblingIndex()] = false;
+
+                        OnOffSlotToggle(false, t);
+                    }
+                    else 
+                    {
+                        t.targetGraphic.color = Color.white;
+
+                        //Show Button
+                        OnOffSlotToggle(true, t);
+                    }
                 }
             }
         }
@@ -529,9 +657,29 @@ public class QuizManager : MonoBehaviour
 
                     t.targetGraphic.color = Color.white;
 
+                    OnOffSlotToggle(false, t);
+
+                    if (t == b)
+                    {
+                        EventSystem.current.SetSelectedGameObject(null);
+                    }
+                }
+                else
+                {
+                    t.targetGraphic.color = Color.white;
+
+                    //Show Button
+                    OnOffSlotToggle(true, t);
+
                 }
             }
         }
+    }
+    private void OnOffSlotToggle(bool x, Toggle b)
+    {
+        b.transform.Find("ShowButton").gameObject.SetActive(x);
+        b.gameObject.GetComponent<ButtonPressHold>().enabled = x;
+        b.transform.Find("Enter Text").gameObject.SetActive(x); //Hide Hold to Enter text
     }
 
     public void Scoring()
@@ -570,6 +718,14 @@ public class QuizManager : MonoBehaviour
 
     public void Resetting()
     {
+        score = 0; //reset score
+        UpdateScore(score);
+
+        StartTimer(false);
+
+        correctVisits = 0;
+        NumOfRoomsVisited = 0;
+
         quizFinished = false;
         //slides.Clear();
         answerTracker.Clear();

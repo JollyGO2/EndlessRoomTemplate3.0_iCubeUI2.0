@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using TMPro;
-using System;
-using System.IO;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 
 public class SlideManager : MonoBehaviour
@@ -89,7 +92,8 @@ public class SlideManager : MonoBehaviour
 
     [Header("Addons")]
     public GameObject dubWallButton;
-    public GameObject AnswerTypeDropDown;
+    public TMP_Text timer;
+    public TMP_InputField timerInput;
 
 
     private void Start()
@@ -107,7 +111,7 @@ public class SlideManager : MonoBehaviour
             bothChoices.transform.GetChild(i).GetChild(0).GetComponent<TMP_Text>().text = (i + 1).ToString() + ".";
         }
         dubWallButton.SetActive(false);
-        AnswerTypeDropDown.SetActive(false);
+        answerType.gameObject.SetActive(false);
     }
 
 
@@ -160,6 +164,7 @@ public class SlideManager : MonoBehaviour
     //text saving
     public void SaveANS(GameObject a)
     {
+
         GameObject o = textChoices;
 
         for (int t = 0; t < slidesList[currentSlide].textAnswers.Count; t++)
@@ -187,6 +192,44 @@ public class SlideManager : MonoBehaviour
         SlidesData.instance.DataUpdate(this);
 
 
+    }
+
+    public string FormatTime(float timeInSeconds)
+    {
+        int minutes = Mathf.FloorToInt(timeInSeconds / 60f);
+        int seconds = Mathf.FloorToInt(timeInSeconds % 60f);
+
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    //text saving
+    public void SaveTimer(GameObject a)
+    {
+
+        int time;
+        string t = a.GetComponent<TMP_InputField>().text;
+
+        if (int.TryParse(t, out time))
+        {
+            Debug.Log("Converted to int: " + time);
+
+            UndoRedo.instance.Action(); //Save previous state first
+
+            //Update Timer
+            FindObjectOfType<EditorManager>().totalTime = time;
+            ReloadSlide();
+        }
+        else
+        {
+            Debug.LogWarning("Text is not a valid integer: " + t);
+        }
+
+    }
+
+    public void UpdateTimer(int time)
+    {
+        timer.text = FormatTime(time);
+        timerInput.SetTextWithoutNotify(timer.text);
     }
 
 
@@ -766,7 +809,6 @@ public class SlideManager : MonoBehaviour
                     o.transform.GetChild(i).GetComponentInChildren<Toggle>().isOn = false;
                 }
             }
-
         }
         else
         {
@@ -827,7 +869,7 @@ public class SlideManager : MonoBehaviour
         else
         {
             answerCount.gameObject.SetActive(true);
-            answerType.gameObject.SetActive(true);
+            //answerType.gameObject.SetActive(true);
         }
 
 
@@ -854,6 +896,8 @@ public class SlideManager : MonoBehaviour
                 slideButtonsList.Remove(slideButtonsList[slideButtonsList.Count - 1]);
             }
         }
+
+        UpdateTimer(FindObjectOfType<EditorManager>().totalTime);
 
         skipaction = false;
     }

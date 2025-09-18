@@ -11,12 +11,19 @@ public class QuizScoring : MonoBehaviour
     public QuizManager quizManager;
     public TMP_Text totalScore;
     public TMP_Text scorePercentage;
+    public TMP_Text Accuracy;
     public List<GameObject> scoreSlideObjects;
     public GameObject slideButtonsHolder;
     public List<Button> slideButtons;
     public GameObject slideButtonsPrefab;
     public List<int> wrongQuestions;
     public List<AudioSource> audioPlayers;
+
+    private void Start()
+    {
+        scoringSlide.SetActive(false);
+        quizSlide.SetActive(true);
+    }
 
     public void Resetting()
     {
@@ -43,50 +50,68 @@ public class QuizScoring : MonoBehaviour
 
         if (!finished)
         {
+
+            //If u want to show the solution for each room
+            /*
             float total = 0;
-        float wrong = 0;
-        foreach (QuizManager.Slide s in quizManager.slidesList)
-        {
-            Debug.Log("Spawn quiz slide button");
-            Button b = Instantiate(slideButtonsPrefab, slideButtonsHolder.transform).GetComponentInChildren<Button>();
-            slideButtons.Add(b);
-            b.onClick.AddListener(delegate { ToSlide(b); });
-            b.transform.parent.GetComponentInChildren<TMP_Text>().text = (quizManager.slidesList.IndexOf(s)+1).ToString();
+            float wrong = 0;
 
-            if (s.slideType != QuizManager.Slide.SlideType.blank)
+            foreach (QuizManager.Slide s in quizManager.slidesList)
             {
-                total++;
+                Debug.Log("Spawn quiz slide button");
+                Button b = Instantiate(slideButtonsPrefab, slideButtonsHolder.transform).GetComponentInChildren<Button>();
+                slideButtons.Add(b);
+                b.onClick.AddListener(delegate { ToSlide(b); });
+                b.transform.parent.GetComponentInChildren<TMP_Text>().text = (quizManager.slidesList.IndexOf(s)+1).ToString();
 
-                int i = quizManager.slidesList.IndexOf(s);
-                if (wrongQuestions.Contains(i))
+                if (s.slideType != QuizManager.Slide.SlideType.blank)
                 {
-                    b.GetComponentInChildren<Image>().color = Color.red;
-                    wrong++;
+                    total++;
+
+                    int i = quizManager.slidesList.IndexOf(s);
+                    if (wrongQuestions.Contains(i))
+                    {
+                        b.GetComponentInChildren<Image>().color = Color.red;
+                        wrong++;
+                    }
+                    else
+                    {
+                        b.GetComponentInChildren<Image>().color = Color.green;
+                    }
                 }
                 else
                 {
-                    b.GetComponentInChildren<Image>().color = Color.green;
+
+                    b.GetComponentInChildren<Image>().color = Color.white;
                 }
             }
-            else
-            {
+            */
 
-                b.GetComponentInChildren<Image>().color = Color.white;
-            }
-        }
+            //Old Scoring System
+            /*
+            totalScore.text = (total-wrong) + " / " + total;
+            Debug.Log(((total - wrong) / total) + "Percentage" + wrong + " wrong " +  total.ToString()); ;
 
-        totalScore.text = (total-wrong) + " / " + total;
-        Debug.Log(((total - wrong) / total) + "Percentage" + wrong + " wrong " +  total.ToString()); ;
+                int percentageScore = Mathf.RoundToInt(((total - wrong) / total) * 100f);
 
-            int percentageScore = Mathf.RoundToInt(((total - wrong) / total) * 100f);
+                if (total == 0)
+                {
+                    percentageScore = 0;
+                }
 
-            if (total == 0)
+            scorePercentage.text = percentageScore.ToString()+ "%";
+            */
+            //New Scoring System
+            totalScore.text = quizManager.ScoreText.text;
+            scorePercentage.text = "Rooms Entered: " + quizManager.NumOfRoomsVisited.ToString();
+
+            int percentageScore = Mathf.RoundToInt(((quizManager.correctVisits * 1.0f) / quizManager.NumOfRoomsVisited * 1.0f) * 100f);
+            if (quizManager.NumOfRoomsVisited == 0)
             {
                 percentageScore = 0;
             }
 
-        scorePercentage.text = percentageScore.ToString()+ "%";
-
+            Accuracy.text = "Guess Accuracy: " + percentageScore.ToString() + "%";   
 
             StartCoroutine(TurnOn());
         }
@@ -120,8 +145,11 @@ public class QuizScoring : MonoBehaviour
         yield return new WaitForSeconds(3);
         scoreSlideObjects[2].SetActive(true);
 
+        //yield return new WaitForSeconds(1);
+        //scoreSlideObjects[3].SetActive(true);
+
         yield return new WaitForSeconds(1);
-        scoreSlideObjects[3].SetActive(true);
+        scoreSlideObjects[5].SetActive(true);
 
         yield return new WaitForSeconds(1);
         scoreSlideObjects[4].SetActive(true);
