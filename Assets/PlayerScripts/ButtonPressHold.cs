@@ -16,7 +16,7 @@ public class ButtonPressHold : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public class ActionAfterPress : UnityEvent { }; 
     public ActionAfterPress afterPress = new ActionAfterPress();
 
-    public bool buttonPressed;
+    private bool buttonPressed;
 
 
     public void OnPointerDown(PointerEventData eventData)
@@ -27,7 +27,6 @@ public class ButtonPressHold : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public void OnPointerUp(PointerEventData eventData)
     {
         buttonPressed = false;
-
 
         OffIndicator();
     }

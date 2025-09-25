@@ -14,7 +14,7 @@ public class SlotHolderInteract : MonoBehaviour
 {
     public Sprite placeholderImage;
 
-    private Image slotImage;
+    public Image slotImage;
     private bool imageSet = false;
 
     public void OnPointerDown(PointerEventData eventData) { }
@@ -22,8 +22,7 @@ public class SlotHolderInteract : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        slotImage = transform.Find("Image").GetComponent<Image>();
-        var button = GetComponent<Button>();
+        var button = this.GetComponent<Button>();
         button.onClick.AddListener(OnClick);
     }
 

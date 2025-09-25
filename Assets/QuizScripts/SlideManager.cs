@@ -212,18 +212,23 @@ public class SlideManager : MonoBehaviour
         if (int.TryParse(t, out time))
         {
             Debug.Log("Converted to int: " + time);
-
             UndoRedo.instance.Action(); //Save previous state first
 
-            //Update Timer
-            FindObjectOfType<EditorManager>().totalTime = time;
-            ReloadSlide();
+            SetTimer(time);
+
         }
         else
         {
             Debug.LogWarning("Text is not a valid integer: " + t);
         }
 
+    }
+
+    public void SetTimer(int time)
+    {
+        //Update Timer
+        FindObjectOfType<EditorManager>().totalTime = time;
+        ReloadSlide();
     }
 
     public void UpdateTimer(int time)
@@ -393,7 +398,7 @@ public class SlideManager : MonoBehaviour
 
         //ReloadSlide();
         ChangeAnsType(2);
-        ChangeAnswerNum(3);
+        ChangeAnswerNum(1);
     }
 
     public void UpSlide()

@@ -27,44 +27,6 @@ public class QuizDataSaveLoad : MonoBehaviour
         
     }
 
-    //void Loading()
-    //{
-
-    //    string saveDir = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName);
-    //    Debug.Log(saveDir);
-
-    //    if (!Directory.Exists(saveDir))
-    //    {
-    //        Directory.CreateDirectory(saveDir);
-    //        Directory.CreateDirectory(Path.Combine(saveDir, "Assets"));
-    //        Directory.CreateDirectory(Path.Combine(saveDir, "Assets", "Image"));
-    //        Directory.CreateDirectory(Path.Combine(saveDir, "Assets", "Video"));
-    //        Directory.CreateDirectory(Path.Combine(saveDir, "Assets", "Audio"));
-    //    }
-
-    //    string saveFile = Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz");
-    //    Debug.Log("Save file path: " + saveFile);
-
-    //    if (!File.Exists(saveFile))
-    //    {
-    //        foreach (SlideManager slideManager in SlidesData.instance.managers)
-    //        {
-    //            SlidesData.instance.DataUpdate(slideManager);
-    //        }
-    //        Debug.Log("No save file for Project" + DataAcrossScenes.instance.projectDetails + " found.");
-    //        return;
-    //    }
-
-    //    //slidesData.slidesDataList = ES3.Load<List<SlidesData.Slides>>("SlidesData", saveFile);
-    //    for (int managerNum = 0; managerNum < SlidesData.instance.slideManagersData.Count; managerNum++)
-    //    {
-    //        SlidesData.instance.slideManagersData[managerNum].slidesData = ES3.Load<List<SlidesData.Slides>>("Wall" + managerNum.ToString(), Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz"));
-    //    }
-
-    //    SlidesData.instance.LoadData();
-
-    //}
-
     public void Loading()
     {
         originalName = DataAcrossScenes.instance.projectName;
@@ -81,7 +43,7 @@ public class QuizDataSaveLoad : MonoBehaviour
             Directory.CreateDirectory(Path.Combine(dataDir, "Assets", "Audio"));
         }
 
-        string saveFile = Path.Combine(userDir, DataAcrossScenes.instance.projectName + ".quiz");
+        string saveFile = Path.Combine(userDir, DataAcrossScenes.instance.projectName + ".ER"); //Originally .quiz
         Debug.Log("Save file path: " + saveFile);
 
         if (!File.Exists(saveFile))
@@ -97,8 +59,13 @@ public class QuizDataSaveLoad : MonoBehaviour
 
             for (int i = 0; i < SlidesData.instance.slideManagersData.Count; i++)
             {
-                for (int a = 0; a < 4; a++)
+                for (int a = 0; a < placeholderImages.Count; a++) // a < 4
                 {
+                    if(placeholderImages[a] == null)
+                    {
+                        continue;
+                    }
+
                     StartCoroutine(SavePlaceholderImage(placeholderImages[a]));
                     SlidesData.instance.slideManagersData[i].slidesData[1].mediaAnswersPath[a] = placeholderImages[a].name + ".png";
                 }
@@ -186,26 +153,26 @@ public class QuizDataSaveLoad : MonoBehaviour
             
         }
 
-        //ES3.Save("SlidesData", slidesData.slidesDataList, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz"));
+        //ES3.Save("SlidesData", slidesData.slidesDataList, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
 
         for (int managerNum = 0; managerNum < SlidesData.instance.slideManagersData.Count; managerNum++)
         {
-            ES3.Save("Wall" + managerNum.ToString(), SlidesData.instance.slideManagersData[managerNum].slidesData, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz"));
+            ES3.Save("Wall" + managerNum.ToString(), SlidesData.instance.slideManagersData[managerNum].slidesData, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
             Debug.Log("Saved wall " + managerNum);
         }
 
 
         if (DataAcrossScenes.instance.wallsConfig == DataAcrossScenes.WallsConfig.Three)
         {
-            ES3.Save("WallConfig", "3", Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz"));
+            ES3.Save("WallConfig", "3", Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
         }
         else if (DataAcrossScenes.instance.wallsConfig == DataAcrossScenes.WallsConfig.Four)
         {
-            ES3.Save("WallConfig", "4", Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz"));
+            ES3.Save("WallConfig", "4", Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
         }
 
 
-        ES3.Save("BGM", FindObjectOfType<EditorManager>().bgmFileName, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".quiz"));
+        ES3.Save("BGM", FindObjectOfType<EditorManager>().bgmFileName, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
 
         CopyFiles(saveDir, userDir);
 
@@ -217,8 +184,8 @@ public class QuizDataSaveLoad : MonoBehaviour
     {
 
 
-        string copyQuizFrom = Path.Combine(fromDir, DataAcrossScenes.instance.projectName + ".quiz");
-        string copyQuizTo = Path.Combine(toDir, DataAcrossScenes.instance.projectName + ".quiz");
+        string copyQuizFrom = Path.Combine(fromDir, DataAcrossScenes.instance.projectName + ".ER");
+        string copyQuizTo = Path.Combine(toDir, DataAcrossScenes.instance.projectName + ".ER");
 
         if (File.Exists(copyQuizTo))
         {

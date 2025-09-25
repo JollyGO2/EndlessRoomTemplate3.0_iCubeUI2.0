@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5940240782041066272}
   - component: {fileID: 2530716541909214566}
   - component: {fileID: 5224649413150836460}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: ToolCloneImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -7,6 +7,8 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering.VirtualTexturing;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
@@ -70,6 +72,8 @@ public class QuizManager : MonoBehaviour
     public float totalTime = 10;
     public int NumOfRoomsVisited { get; private set; }
     public int correctVisits { get; private set; }
+
+    public ProceduralBG proceduralBG;
 
     void Update()
     {
@@ -174,6 +178,8 @@ public class QuizManager : MonoBehaviour
             return;
         }
 
+        thisSlotCalled.GetComponentInChildren<Toggle>().isOn = true;
+
         int scoreModifier;
         string t = thisSlotCalled.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text;
 
@@ -213,6 +219,7 @@ public class QuizManager : MonoBehaviour
         UpdateScore(score);
 
         //Pick Random Room
+        thisSlotCalled.GetComponentInChildren<Toggle>().isOn = false;
         PickRandomRoom(current);
         ReloadQN();
 
@@ -290,8 +297,8 @@ public class QuizManager : MonoBehaviour
 
     public void ReloadQN()
     {
-        bgImage.sprite = slidesList[current].bgSprite;
-
+        //bgImage.sprite = slidesList[current].bgSprite;
+        proceduralBG.RandomiseBG();
 
         //get type of slide for current slide
         Slide.SlideType t = slidesList[current].slideType;
@@ -364,33 +371,43 @@ public class QuizManager : MonoBehaviour
                 if (mediaans.gameObject.activeInHierarchy)
                 {
                     Transform mediaAnsHolder = mediaans.GetChild(i).GetChild(2).Find("ShowButton");
+                    Transform mediaOutline = mediaans.GetChild(i).GetChild(2).Find("ButtonOutline"); //Addon
+                    Transform indicator = mediaans.GetChild(i).GetChild(2).Find("Indicator"); //Addon
 
                     if (!String.IsNullOrEmpty(slidesList[current].videoAnswersPath[i]))
                     {
                         StartCoroutine(MediaLoader.SetupVideo(mediaAnsHolder, slidesList[current].videoAnswersPath[i]));
 
-                     }
+                        //StartCoroutine(MediaLoader.SetupVideo(mediaOutline, slidesList[current].videoAnswersPath[i]));
+                        //indicator.GetComponent<Image>().sprite = mediaOutline.GetComponent<Image>().sprite;
+
+                    }
                     else
                     {
 
                         if (slidesList[current].imageSprites[i] != null)
                         {
                             StartCoroutine(MediaLoader.SetupImage(mediaAnsHolder, slidesList[current].imageSprites[i]));
+
+                            StartCoroutine(MediaLoader.SetupImage(mediaOutline, slidesList[current].imageSprites[i])); //addon
+                            indicator.GetComponent<Image>().sprite = mediaOutline.GetComponent<Image>().sprite;
                         }
                         else
                         {
                             StartCoroutine(MediaLoader.SetupImage(mediaAnsHolder, defaultSprite));
 
+                            StartCoroutine(MediaLoader.SetupImage(mediaOutline, defaultSprite));
+                            indicator.GetComponent<Image>().sprite = mediaOutline.GetComponent<Image>().sprite;
+
+
                             //whole.transform.GetChild(i).GetComponentInChildren<Toggle>().targetGraphic = mediaAnsHolder.GetComponent<Image>();
-                            //whole.transform.GetChild(i).Find("Toggle").Find("ShowButton").GetComponent<Image>().sprite = mediaAnsHolder.GetComponent<Image>().sprite;
-                            //whole.transform.GetChild(i).Find("Toggle").Find("ShowButton").gameObject.SetActive(false);
                         }
 
                     }
 
                 }
 
-                mediaans.GetChild(i).GetChild(2).Find("ShowButton").gameObject.SetActive(false);
+                //mediaans.GetChild(i).GetChild(2).Find("ShowButton").gameObject.SetActive(false);
 
                 if (quizFinished)
                 {
@@ -474,7 +491,7 @@ public class QuizManager : MonoBehaviour
                     {
                         if (!g.isOn)
                         {
-                            g.interactable = true;
+                            //g.interactable = true;
                             g.targetGraphic.color = Color.white;
                         }
                     }
@@ -653,7 +670,7 @@ public class QuizManager : MonoBehaviour
             {
                 if (!t.isOn)
                 {
-                    t.interactable = true;
+                    //t.interactable = true;
 
                     t.targetGraphic.color = Color.white;
 
@@ -677,8 +694,8 @@ public class QuizManager : MonoBehaviour
     }
     private void OnOffSlotToggle(bool x, Toggle b)
     {
-        b.transform.Find("ShowButton").gameObject.SetActive(x);
-        b.gameObject.GetComponent<ButtonPressHold>().enabled = x;
+        //b.transform.Find("ShowButton").gameObject.SetActive(x);
+        //b.gameObject.GetComponent<ButtonPressHold>().enabled = x;
         b.transform.Find("Enter Text").gameObject.SetActive(x); //Hide Hold to Enter text
     }
 
@@ -736,13 +753,13 @@ public class QuizManager : MonoBehaviour
             //textchoices.transform.GetChild(i).GetChild(2).GetComponentInChildren<TMP_Text>().text = "";
             textChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().graphic.color = new Color(1f, 0.7882354f, 0f);
             textChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().targetGraphic.color = Color.white;
-            textChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().interactable = true;
+            //textChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().interactable = true;
 
 
             imageChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().isOn = false;
             imageChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().graphic.color = new Color(1f, 0.7882354f, 0f);
             imageChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().targetGraphic.color = Color.white;
-            imageChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().interactable = true;
+            //imageChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().interactable = true;
             //imagetextschoices.transform.GetChild(i).GetChild(2).GetComponent<Image>().sprite = null;
 
 
@@ -750,7 +767,7 @@ public class QuizManager : MonoBehaviour
             bothChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().isOn = false;
             bothChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().graphic.color = new Color(1f, 0.7882354f, 0f);
             bothChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().targetGraphic.color = Color.white;
-            bothChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().interactable = true;
+            //bothChoices.transform.GetChild(i).GetComponentInChildren<Toggle>().interactable = true;
             //imagetextschoices.transform.GetChild(i).GetChild(2).GetComponent<Image>().sprite = null;
 
             bothChoices.transform.GetChild(i).GetChild(2).GetComponentInChildren<TMP_Text>().text = "";

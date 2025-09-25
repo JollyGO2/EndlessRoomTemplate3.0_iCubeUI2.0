@@ -1190,7 +1190,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 349e10ea403088d4cbd1f676dea8467c, type: 2}
     - target: {fileID: 7394053275071465984, guid: ff2ab019602c1e54e87983571ddc8582, type: 3}
       propertyPath: details
-      value: Use this template to create quizzes.
+      value: Use this template to create an endless room game.
       objectReference: {fileID: 0}
     - target: {fileID: 7394053275071465984, guid: ff2ab019602c1e54e87983571ddc8582, type: 3}
       propertyPath: isTemplate
@@ -1198,7 +1198,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7394053275071465984, guid: ff2ab019602c1e54e87983571ddc8582, type: 3}
       propertyPath: projectName
-      value: Quiz Template
+      value: Room Template
       objectReference: {fileID: 0}
     - target: {fileID: 7394053275071465984, guid: ff2ab019602c1e54e87983571ddc8582, type: 3}
       propertyPath: placeholderInfo
@@ -3263,8 +3263,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 54475634}
   m_HandleRect: {fileID: 54475633}
   m_Direction: 0
-  m_Value: 0.49999255
-  m_Size: 0.9914535
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
