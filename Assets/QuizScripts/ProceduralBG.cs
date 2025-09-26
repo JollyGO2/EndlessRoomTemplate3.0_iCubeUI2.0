@@ -7,18 +7,20 @@ using UnityEngine.UI;
 public class ProceduralBG : MonoBehaviour
 {
     
-    public int LineWidth = 8;
+    public int lineWidth = 8;
+    public Color lineColor;
     public List<Color> colors = new List<Color>() { Color.black, Color.white };
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<VerticalLayoutGroup>().spacing = LineWidth;
+        GetComponent<VerticalLayoutGroup>().spacing = lineWidth;
         foreach(HorizontalLayoutGroup layout in GetComponentsInChildren<HorizontalLayoutGroup>())
         {
-            layout.spacing = LineWidth;
+            layout.spacing = lineWidth;
             foreach(Outline line in layout.GetComponentsInChildren<Outline>())
             {
-                line.effectDistance = new Vector2(LineWidth, -LineWidth);
+                line.effectDistance = new Vector2(lineWidth, -lineWidth);
+                line.effectColor = lineColor;
             }
         }
     }

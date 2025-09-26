@@ -105,13 +105,9 @@ public class ScoringVis : MonoBehaviour
 
     public void Score(float s)
     {
-        Vector2 parentCenterWorld = QuizWall.GetComponent<RectTransform>().position;
-        Vector2 targetLocal = QuizWall.InverseTransformPoint(parentCenterWorld);
-        targetLocal -= new Vector2(QuizWall.GetComponent<RectTransform>().rect.size[0] / 2, 0);
-
         RectTransform rectTransform = GetComponent<RectTransform>();
 
-        rectTransform.localPosition = Vector2.Lerp(startPos, targetLocal, s); //Move object 
+        rectTransform.localPosition = Vector2.Lerp(startPos, Vector2.zero, s); //Move object 
         if (s > 0)
         {
             transform.localScale = Vector2.Lerp(Vector2.one, new Vector2(scaleFactor, scaleFactor), s);
