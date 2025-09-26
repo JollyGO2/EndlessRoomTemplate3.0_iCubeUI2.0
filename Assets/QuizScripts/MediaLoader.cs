@@ -165,13 +165,13 @@ public class MediaLoader : MonoBehaviour
         //Debug.Log("Start image setup for " + output.parent.name);
         if (output == null)
         {
-            Debug.LogError("No output assigned to setup image");
+            Debug.LogWarning("No output assigned to setup image");
             yield break;
         }
 
         if (sprite == null)
         {
-            Debug.LogError("No sprite assigned to setup image");
+            Debug.LogWarning("No sprite assigned to setup image");
             yield break;
 
         }

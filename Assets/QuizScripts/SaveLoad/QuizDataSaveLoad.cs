@@ -56,7 +56,6 @@ public class QuizDataSaveLoad : MonoBehaviour
             }
 
 
-
             for (int i = 0; i < SlidesData.instance.slideManagersData.Count; i++)
             {
                 for (int a = 0; a < placeholderImages.Count; a++) // a < 4
@@ -69,8 +68,7 @@ public class QuizDataSaveLoad : MonoBehaviour
                     StartCoroutine(SavePlaceholderImage(placeholderImages[a]));
                     SlidesData.instance.slideManagersData[i].slidesData[1].mediaAnswersPath[a] = placeholderImages[a].name + ".png";
                 }
-            }
-
+            } //Placeholders images
 
 
 

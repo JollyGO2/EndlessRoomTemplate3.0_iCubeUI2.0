@@ -102,7 +102,7 @@ public class QuizScoring : MonoBehaviour
             scorePercentage.text = percentageScore.ToString()+ "%";
             */
             //New Scoring System
-            totalScore.text = quizManager.ScoreText.text;
+            totalScore.text = quizManager.scoreText;
             scorePercentage.text = "Rooms Entered: " + quizManager.NumOfRoomsVisited.ToString();
 
             int percentageScore = Mathf.RoundToInt(((quizManager.correctVisits * 1.0f) / quizManager.NumOfRoomsVisited * 1.0f) * 100f);

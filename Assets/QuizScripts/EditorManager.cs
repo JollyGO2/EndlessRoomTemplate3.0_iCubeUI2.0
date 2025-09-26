@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
 using System.IO;
-using System;
 using System.Xml.Schema;
+using TMPro;
+using TouchScript.Examples.RawInput;
+using UnityEngine;
 
 public class EditorManager : MonoBehaviour
 {
@@ -131,8 +132,8 @@ public class EditorManager : MonoBehaviour
 
         Directory.Move(moveDirFrom, moveDirTo);
 
-        string moveFileFrom = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, originalName + ".quiz");
-        string moveFileTo = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, DataAcrossScenes.instance.projectName + ".quiz");
+        string moveFileFrom = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, originalName + ".ER"); //.quiz
+        string moveFileTo = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, DataAcrossScenes.instance.projectName + ".ER");
 
         if (!File.Exists(moveFileFrom))
         {
@@ -160,8 +161,8 @@ public class EditorManager : MonoBehaviour
         string moveUserDirTo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName);
         Directory.Move(moveUserDirFrom, moveUserDirTo);
 
-        string moveUserFileFrom = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName, originalName + ".quiz");
-        string moveUserFileTo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName, DataAcrossScenes.instance.projectName + ".quiz");
+        string moveUserFileFrom = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName, originalName + ".ER");
+        string moveUserFileTo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "iCUBE", DataAcrossScenes.instance.projectName, DataAcrossScenes.instance.projectName + ".ER");
 
         if (!File.Exists(moveUserFileFrom))
         {
@@ -188,6 +189,24 @@ public class EditorManager : MonoBehaviour
             fourWallDuplicate.SetActive(true);
 
             fourWallDuplicate.GetComponent<DuplicateWall>().CopyFrom(man);
+        }
+    }
+
+    public void SpecialDuplicate()
+    {
+        if (dataPersistence.wallsConfig == DataAcrossScenes.WallsConfig.Three)
+        {
+            WallManager wall = threeWallChoosing.GetComponent<WallManager>();
+            DuplicateWall duplicateWall = threeWallDuplicate.GetComponent<DuplicateWall>();
+
+            duplicateWall.AutoCopyWalls(wall.walls[wall.current].GetComponentInChildren<SlideManager>());
+        }
+        else if (dataPersistence.wallsConfig == DataAcrossScenes.WallsConfig.Four)
+        {
+            WallManager wall = fourWallChoosing.GetComponent<WallManager>();
+            DuplicateWall duplicateWall = fourWallDuplicate.GetComponent<DuplicateWall>();
+
+            duplicateWall.AutoCopyWalls(wall.walls[wall.current].GetComponentInChildren<SlideManager>());
         }
     }
 
@@ -224,10 +243,5 @@ public class EditorManager : MonoBehaviour
         bgm = null;
         bgmFileName = null;
         FindObjectOfType<WallManager>().AudioCheck();
-    }
-
-    public void UpdateTimer(int time)
-    {
-
     }
 }

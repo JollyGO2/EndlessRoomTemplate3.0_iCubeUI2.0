@@ -53,7 +53,7 @@ public class MainFilesManager : MonoBehaviour
             foreach (string checkPath in foldersCheck)
             {
                 string fileName = checkPath.Substring(Path.GetDirectoryName(checkPath).Length + 1);
-                string checkFile = Path.Combine(checkPath, fileName + ".quiz");
+                string checkFile = Path.Combine(checkPath, fileName + ".ER");
 
                 Debug.Log("Checking for " + checkFile);
 

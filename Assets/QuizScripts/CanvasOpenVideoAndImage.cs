@@ -176,6 +176,27 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler
         }
     }
 
+    public void RemoveImage()
+    {
+        if (mediaType == MediaType.Blank)
+        {
+            slideManager.BlankImage(null);
+        }
+        else if (mediaType == MediaType.Answer)
+        {
+            //Debug.Log("Assigning media to an answer");
+            //Debug.Log("File name: " + fileName);
+            slideManager.IMGANS(null, transform.parent.GetSiblingIndex());
+        }
+        else if (mediaType == MediaType.BG)
+        {
+            slideManager.PressChangeBG(null);
+        }
+        else if (mediaType == MediaType.Thumbnail)
+        {
+            FindObjectOfType<Publishing>().thumbnailImage.sprite = MediaLoader.LoadSprite(Path.Combine("Assets", "Image", null), true);
+        }
+    }
 
 
 }

@@ -36,4 +36,19 @@ public class DuplicateWall : MonoBehaviour
 
     }
 
+    public void AutoCopyWalls(SlideManager m)
+    {
+        copyFromManager = m;
+
+        foreach (SlideManager s in slideManagers)
+        {
+            if(s != copyFromManager)
+            {
+                //s.currentSlide = 0;
+
+                SlidesData.instance.Duplicate(copyFromManager, s);
+            }
+        }
+    }
+
 }

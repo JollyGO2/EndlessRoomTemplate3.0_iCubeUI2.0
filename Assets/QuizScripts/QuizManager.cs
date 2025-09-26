@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering.VirtualTexturing;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.U2D;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -63,8 +64,11 @@ public class QuizManager : MonoBehaviour
     public Image bgImage;
 
     [Header("Addons")]
-    public TextMeshProUGUI ScoreText;
+    public TextMeshProUGUI scoringText;
+    public ScoringVis ScoringVis;
+    public int passingScore = 70;
     private int score = 0;
+    public string scoreText { get; private set; }
 
     public TextMeshProUGUI TimerText;
     private float timeRemaining = 0;
@@ -162,13 +166,14 @@ public class QuizManager : MonoBehaviour
             }
         }
 
-        ScoreText.transform.parent.gameObject.SetActive(true);
+        score = 0;
         TimerText.transform.parent.gameObject.SetActive(true);
         correctVisits = 0;
         NumOfRoomsVisited = 0;
         totalTime = FindObjectOfType<EditorManager>().totalTime;
         StartTimer(true);
         ReloadQN();
+        ScoringVis.ResetPlacement();
     }
 
     public void QNNext(GameObject thisSlotCalled)
@@ -193,6 +198,7 @@ public class QuizManager : MonoBehaviour
             scoreModifier = 1; //Default to 1 if error
         }
 
+        bool isWrong = false;
         //Check with reference to index
         int index = thisSlotCalled.transform.GetSiblingIndex();
 
@@ -209,6 +215,8 @@ public class QuizManager : MonoBehaviour
         else if (answerTracker[current].options[index] && !slidesList[current].correctAnswers[index])
         {
             Debug.Log("Answered Wrong");
+            isWrong = true;
+
             if (scoreModifier >= 0)
             {
                 score -= scoreModifier;
@@ -217,32 +225,27 @@ public class QuizManager : MonoBehaviour
 
         NumOfRoomsVisited++;
         UpdateScore(score);
+        ScoringVis.ColorIndiciator(isWrong);
+        thisSlotCalled.GetComponentInChildren<Toggle>().isOn = false;
+
+        if (score > passingScore)
+        {
+            Scoring();
+            StartTimer(false);
+            return;
+        }
 
         //Pick Random Room
-        thisSlotCalled.GetComponentInChildren<Toggle>().isOn = false;
         PickRandomRoom(current);
         ReloadQN();
-
-        //Old Code
-        /*
-        if (current < slidesList.Count - 1)
-        {
-            current++;
-
-            ReloadQN();
-        }
-        else
-        {
-            Debug.Log("Finish");
-            Scoring();
-
-        }
-        */
     }
     private void UpdateScore(int num)
     {
         //Formate Score
-        ScoreText.text = FormatLargeNumber(num);
+        ScoringVis.Score(num * 1f / passingScore);
+
+        scoreText = FormatLargeNumber(num);
+        scoringText.text = scoreText;
     }
     private string FormatLargeNumber(long num)
     {
@@ -533,7 +536,6 @@ public class QuizManager : MonoBehaviour
         /*
         if (quizFinished)
         {
-            //ScoreText.transform.parent.gameObject.SetActive(false);
             //TimerText.transform.parent.gameObject.SetActive(false);
 
             //getting which top button(s) to use
@@ -742,6 +744,8 @@ public class QuizManager : MonoBehaviour
 
         correctVisits = 0;
         NumOfRoomsVisited = 0;
+
+        ScoringVis.ResetColor();
 
         quizFinished = false;
         //slides.Clear();
