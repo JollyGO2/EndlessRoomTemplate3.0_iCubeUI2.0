@@ -94,6 +94,7 @@ public class SlideManager : MonoBehaviour
     public GameObject dubWallButton;
     public TMP_Text timer;
     public TMP_InputField timerInput;
+    public TMP_InputField passingTextInput;
 
 
     private void Start()
@@ -237,6 +238,26 @@ public class SlideManager : MonoBehaviour
         timerInput.SetTextWithoutNotify(timer.text);
     }
 
+    public void SavePassingScore(GameObject a)
+    {
+
+        int pScore;
+        string t = a.GetComponent<TMP_InputField>().text;
+
+        if (int.TryParse(t, out pScore))
+        {
+            Debug.Log("Converted to int: " + pScore);
+            UndoRedo.instance.Action(); //Save previous state first
+
+            FindObjectOfType<EditorManager>().passingScore = pScore;
+
+        }
+        else
+        {
+            Debug.LogWarning("Text is not a valid integer: " + t);
+        }
+
+    }
 
     //correct/wrong saving
     public void ANSToggle(GameObject a)
@@ -903,6 +924,7 @@ public class SlideManager : MonoBehaviour
         }
 
         UpdateTimer(FindObjectOfType<EditorManager>().totalTime);
+        passingTextInput.SetTextWithoutNotify(FindObjectOfType<EditorManager>().passingScore.ToString());
 
         skipaction = false;
     }

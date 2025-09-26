@@ -27,6 +27,7 @@ public class EditorManager : MonoBehaviour
 
     [Header("Addon")]
     public int totalTime;
+    public int passingScore;
 
     // Start is called before the first frame update
     void Start()
@@ -212,7 +213,10 @@ public class EditorManager : MonoBehaviour
 
     public void PlayBGM()
     {
-        GetComponent<AudioSource>().PlayOneShot(bgm);
+        AudioSource source = GetComponent<AudioSource>();
+        source.clip = bgm;
+        source.loop = true;
+        source.Play();
     }
 
     public void LoadAudioClip()

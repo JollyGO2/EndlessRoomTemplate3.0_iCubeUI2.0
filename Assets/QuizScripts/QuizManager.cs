@@ -77,7 +77,11 @@ public class QuizManager : MonoBehaviour
     public int NumOfRoomsVisited { get; private set; }
     public int correctVisits { get; private set; }
 
-    public ProceduralBG proceduralBG;
+    [SerializeField] ProceduralBG proceduralBG;
+
+    [Header("Music Addons")]
+    [SerializeField] AudioClip correctAudio;
+    [SerializeField] AudioClip wrongAudio;
 
     void Update()
     {
@@ -171,6 +175,7 @@ public class QuizManager : MonoBehaviour
         correctVisits = 0;
         NumOfRoomsVisited = 0;
         totalTime = FindObjectOfType<EditorManager>().totalTime;
+        passingScore = FindObjectOfType<EditorManager>().passingScore;
         StartTimer(true);
         ReloadQN();
         ScoringVis.ResetPlacement();
@@ -226,6 +231,8 @@ public class QuizManager : MonoBehaviour
         NumOfRoomsVisited++;
         UpdateScore(score);
         ScoringVis.ColorIndiciator(isWrong);
+
+        PlaySound(isWrong);
         thisSlotCalled.GetComponentInChildren<Toggle>().isOn = false;
 
         if (score > passingScore)
@@ -732,6 +739,18 @@ public class QuizManager : MonoBehaviour
         if (!quizFinished)
         {
             quizFinished = true;
+        }
+    }
+
+    public void PlaySound(bool isWrong)
+    {
+        if (!isWrong)
+        {
+            GetComponent<AudioSource>().PlayOneShot(correctAudio);
+        }
+        else
+        {
+            GetComponent<AudioSource>().PlayOneShot(wrongAudio);
         }
     }
 

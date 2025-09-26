@@ -1346,7 +1346,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Enter a new Quiz name:'
+  m_text: 'Enter a new Room name:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9ede5a90626a00e459dd51e99548651b, type: 2}
   m_sharedMaterial: {fileID: -3847660024664319151, guid: 9ede5a90626a00e459dd51e99548651b, type: 2}
@@ -5303,7 +5303,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quiz Title
+  m_text: Endless Escape Title
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9ede5a90626a00e459dd51e99548651b, type: 2}
   m_sharedMaterial: {fileID: -3847660024664319151, guid: 9ede5a90626a00e459dd51e99548651b, type: 2}
@@ -7947,7 +7947,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2141654296}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.68041235
+  m_Size: 0.6804123
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
