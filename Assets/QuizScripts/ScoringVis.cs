@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using TouchScript.Examples.Colors;
 using Unity.VisualScripting;
 using UnityEditor;
-//using UnityEditor.PackageManager.Requests;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 using static Unity.VisualScripting.Member;

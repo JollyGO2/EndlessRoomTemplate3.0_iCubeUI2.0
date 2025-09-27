@@ -44,6 +44,8 @@ public class DuplicateWall : MonoBehaviour
         {
             if(s != copyFromManager)
             {
+                //s.currentSlide = 0;
+
                 SlidesData.instance.Duplicate(copyFromManager, s);
             }
         }

@@ -137,17 +137,6 @@ public class SlideManager : MonoBehaviour
 
         ReloadSlide();
     }
-
-    public void SpriteIMGANS(Sprite sprite, int answerNumber)
-    {
-        SlidesData.instance.SpecialMediaAnsUpdate(this, currentSlide, answerNumber, sprite);
-
-        slidesList[currentSlide].imageSprites[answerNumber] = MediaLoader.LoadSpriteSpecial(sprite);
-        slidesList[currentSlide].videoPath[answerNumber] = null;
-
-        ReloadSlide();
-    }
-
     public void RemoveAudio()
     {
         FindObjectOfType<EditorManager>().bgm = null;

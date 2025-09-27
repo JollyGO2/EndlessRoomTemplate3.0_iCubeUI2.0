@@ -25,8 +25,6 @@ public class SlidesData : MonoBehaviour
     {
         public List<string> textAnswers = new List<string>() { "", "" };
         public List<string> mediaAnswersPath = new List<string>() { null, null };
-        // Save a list of string image names then use the placeholder system to load those images (QuizDataSaveLoad)
-        public List<Sprite> mediaAnswerSprites = new List<Sprite>() { null, null };
         public List<bool> correctAnswers = new List<bool>() { true, false };
         public string questionText;
         public enum Type { text, image, both, blank };
@@ -104,8 +102,7 @@ public class SlidesData : MonoBehaviour
             totalToLoad += slidesDataList.Count; //bg sprites
             for (int slideNum = 0; slideNum < slidesDataList.Count; slideNum++)
             {
-                //totalToLoad += slidesDataList[slideNum].mediaAnswersPath.Count; //answer/blank sprite media
-                totalToLoad += slidesDataList[slideNum].mediaAnswerSprites.Count; //answer/blank sprite media
+                totalToLoad += slidesDataList[slideNum].mediaAnswersPath.Count; //answer/blank sprite media
             }
 
             StartCoroutine(LoadWall(slideManager, slidesDataList));
@@ -204,7 +201,7 @@ public class SlidesData : MonoBehaviour
 
 
             Debug.Log("Checking slideData assigned to slideType");
-            /*
+
             for (int mediaNum = 0; mediaNum < slideData.mediaAnswersPath.Count; mediaNum++)
             {
                 string mediaPath = slideData.mediaAnswersPath[mediaNum];
@@ -259,50 +256,6 @@ public class SlidesData : MonoBehaviour
 
                 }
                 yield return null;
-            }*/
-            for (int mediaNum = 0; mediaNum < slideData.mediaAnswerSprites.Count; mediaNum++)
-            {
-                Sprite thisSprite = slideData.mediaAnswerSprites[mediaNum];
-
-                while (currentSlide.videoPath.Count < slideData.mediaAnswerSprites.Count)
-                {
-                    currentSlide.videoPath.Add(null);
-                    yield return null;
-                }
-                while (currentSlide.videoPath.Count > slideData.mediaAnswerSprites.Count)
-                {
-                    currentSlide.videoPath.RemoveAt(currentSlide.videoPath.Count - 1);
-                    yield return null;
-                }
-
-                while (currentSlide.imageSprites.Count < slideData.mediaAnswerSprites.Count)
-                {
-                    currentSlide.imageSprites.Add(null);
-                    yield return null;
-                }
-                while (currentSlide.imageSprites.Count < slideData.mediaAnswerSprites.Count)
-                {
-                    currentSlide.imageSprites.RemoveAt(currentSlide.imageSprites.Count - 1);
-                    yield return null;
-                }
-
-
-
-
-                if (!thisSprite)
-                {
-                    //currentSlide.imageSprites[mediaNum] = MediaLoader.LoadSprite(mediaPath, false);
-
-                    StartCoroutine(SpecialLoadSprite(thisSprite, currentSlide, mediaNum));
-                    yield return null;
-                }
-                else
-                {
-                    loaded++;
-                    currentSlide.imageSprites[mediaNum] = null;
-                    yield return null;
-                }
-                yield return null;
             }
 
             //currentSlide.bgSprite = MediaLoader.LoadSprite(slideData.bgSpritePath, false);
@@ -319,7 +272,9 @@ public class SlidesData : MonoBehaviour
         int copyFromThis = Array.IndexOf(managers, copyFrom);
         int copyToThis = Array.IndexOf(managers, copyTo);
 
-        string path = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, "Duplicating.ER"); //.quiz
+        //slideManagersData[copyToThis].slidesData = new List<Slides>(slideManagersData[copyFromThis].slidesData);
+
+        string path = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, "Duplicating.quiz");
         ES3.Save("Duplicating", slideManagersData[copyFromThis].slidesData,path);
 
         slideManagersData[copyToThis].slidesData = ES3.Load <List<Slides>>("Duplicating",path);
@@ -371,8 +326,6 @@ public class SlidesData : MonoBehaviour
 
             slideList[i].choiceCount = slideManager.slidesList[i].choiceCount;
 
-            //Old Code
-            /*
             while (slideList[i].mediaAnswersPath.Count < slideList[i].choiceCount)
             {
                 slideList[i].mediaAnswersPath.Add(null);
@@ -380,15 +333,6 @@ public class SlidesData : MonoBehaviour
             while (slideList[i].mediaAnswersPath.Count > slideList[i].choiceCount)
             {
                 slideList[i].mediaAnswersPath.RemoveAt(slideList[i].mediaAnswersPath.Count-1);
-            }
-            */
-            while (slideList[i].mediaAnswerSprites.Count < slideList[i].choiceCount)
-            {
-                slideList[i].mediaAnswerSprites.Add(null);
-            }
-            while (slideList[i].mediaAnswerSprites.Count > slideList[i].choiceCount)
-            {
-                slideList[i].mediaAnswerSprites.RemoveAt(slideList[i].mediaAnswerSprites.Count - 1);
             }
 
             while (slideList[i].textAnswers.Count < slideList[i].choiceCount)
@@ -474,23 +418,6 @@ public class SlidesData : MonoBehaviour
         }
 
         slideManagersData[Array.IndexOf(managers, slideManager)].slidesData[slideNum].mediaAnswersPath[answerNum] = fileName;
-    }
-
-    public void SpecialMediaAnsUpdate(SlideManager slideManager, int slideNum, int answerNum, Sprite sprite)
-    {
-        List<Slides> slideList = slideManagersData[Array.IndexOf(managers, slideManager)].slidesData;
-
-
-        while (slideList[slideNum].mediaAnswerSprites.Count < slideList[slideNum].choiceCount)
-        {
-            slideList[slideNum].mediaAnswerSprites.Add(null);
-        }
-        while (slideList[slideNum].mediaAnswerSprites.Count > slideList[slideNum].choiceCount)
-        {
-            slideList[slideNum].mediaAnswerSprites.RemoveAt(slideList[slideNum].mediaAnswerSprites.Count - 1);
-        }
-
-        slideManagersData[Array.IndexOf(managers, slideManager)].slidesData[slideNum].mediaAnswerSprites[answerNum] = sprite;
     }
 
     public void BGUpdate(SlideManager slideManager, int slideNum, string fileName)
@@ -580,26 +507,6 @@ public class SlidesData : MonoBehaviour
         Sprite imageSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
         Debug.Log("Image sprite created " + fileName);
-
-        loaded++;
-        Debug.Log(loaded + "/" + totalToLoad + "% of player loading done");
-        //loading.text = Mathf.RoundToInt(loaded / totalToLoad) + "%";
-
-        slideManagerSlide.imageSprites[ansNumber] = imageSprite;
-    }
-
-    IEnumerator SpecialLoadSprite(Sprite sprite, SlideManager.Slides slideManagerSlide, int ansNumber)
-    {
-        if (sprite == null)
-        {
-            slideManagerSlide.imageSprites[ansNumber] = null;
-            Debug.Log("Image sprite is empty.");
-            loaded++;
-            Debug.Log(loaded + "/" + totalToLoad + "% of player loading done");
-            yield break;
-        }
-
-        Sprite imageSprite = sprite;
 
         loaded++;
         Debug.Log(loaded + "/" + totalToLoad + "% of player loading done");

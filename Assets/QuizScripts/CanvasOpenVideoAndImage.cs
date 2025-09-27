@@ -186,8 +186,7 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler
         {
             //Debug.Log("Assigning media to an answer");
             //Debug.Log("File name: " + fileName);
-            //slideManager.IMGANS(null, transform.parent.GetSiblingIndex());
-            slideManager.SpriteIMGANS(null, transform.parent.GetSiblingIndex());
+            slideManager.IMGANS(null, transform.parent.GetSiblingIndex());
         }
         else if (mediaType == MediaType.BG)
         {
@@ -199,14 +198,6 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    public void SpriteOutput(Sprite sprite)
-    {
-        if (mediaType == MediaType.Answer)
-        {
-            Debug.Log("Assigning media to an answer");
-            slideManager.SpriteIMGANS(sprite, transform.parent.GetSiblingIndex());
-        }
-    }
 
 }
 
