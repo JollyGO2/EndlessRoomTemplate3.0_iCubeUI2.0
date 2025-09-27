@@ -61,6 +61,10 @@ public class MediaLoader : MonoBehaviour
 
     }
 
+    public static Sprite LoadSpriteSpecial(Sprite sprite)
+    {
+        return (sprite == null) ? null : sprite;
+    }
 
     public IEnumerator LoadAudio(string url)
     {
