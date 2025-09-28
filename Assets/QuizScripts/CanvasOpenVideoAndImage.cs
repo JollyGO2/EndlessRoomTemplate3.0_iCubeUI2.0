@@ -1,16 +1,17 @@
-using System.Text;
+using SFB;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using SFB;
-using TMPro;
-using UnityEngine.Video;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Web;
-using System;
+using TMPro;
+//using UnityEditor.Build.Content;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Video;
 
 [RequireComponent(typeof(Button))]
 public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler
@@ -198,7 +199,22 @@ public class CanvasOpenVideoAndImage : MonoBehaviour, IPointerDownHandler
         }
     }
 
+    public void SpriteToFilePath(Sprite sprite)
+    {
+        string fileName = sprite.name + ".png";
+        string fileType = "Image";
 
+        string destination = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, "Assets", fileType, fileName);
+
+        MediaLoader.CreateImage(sprite, destination);
+
+        if (mediaType == MediaType.Answer)
+        {
+            Debug.Log("Assigning media to an answer");
+            Debug.Log("File name: " + fileName);
+            slideManager.IMGANS(fileName, transform.parent.GetSiblingIndex());
+        }
+    }
 }
 
 

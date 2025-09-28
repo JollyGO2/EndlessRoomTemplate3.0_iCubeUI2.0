@@ -22,17 +22,74 @@ public class MediaLoader : MonoBehaviour
         Debug.Log("Video assigned to " + videoOutput.name);
     }
 
-
     public static void CreateImage(Sprite sprite, string destinationPath)
     {
-            Sprite itemBGSprite = sprite;
-            Texture2D itemBGTex = itemBGSprite.texture;
-            byte[] itemBGBytes = itemBGTex.EncodeToPNG();
+        if (sprite == null)
+        {
+            Debug.LogError(" Sprite is null, cannot save.");
+            return;
+        }
 
-            Debug.Log(destinationPath);
+        // 1 Get source texture
+        Texture2D sourceTex = sprite.texture;
+        if (sourceTex == null)
+        {
+            Debug.LogError(" Sprite texture is null, cannot save.");
+            return;
+        }
 
-            File.WriteAllBytes(destinationPath, itemBGBytes);
-        
+        // 2 Make sure texture is readable + uncompressed
+        Texture2D readable = CopyToReadable(sourceTex);
+
+        // 3 Crop to sprite rect (if sprite doesnt cover full texture)
+        Rect r = sprite.textureRect;
+        Texture2D cropped = new Texture2D((int)r.width, (int)r.height, TextureFormat.RGBA32, false);
+        cropped.SetPixels(readable.GetPixels(
+            (int)r.x, (int)r.y,
+            (int)r.width, (int)r.height));
+        cropped.Apply();
+
+        // 4 Encode to PNG
+        byte[] pngBytes = cropped.EncodeToPNG();
+
+        // 5 Ensure directory exists
+        string dir = Path.GetDirectoryName(destinationPath);
+        if (!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+
+        // 6 Save file
+        File.WriteAllBytes(destinationPath, pngBytes);
+        Debug.Log($" Sprite saved to {destinationPath}");
+    }
+
+    // Helper function: converts compressed or non-readable texture  readable RGBA32
+    private static Texture2D CopyToReadable(Texture2D source)
+    {
+        // Create a temporary RenderTexture
+        RenderTexture rt = RenderTexture.GetTemporary(
+            source.width,
+            source.height,
+            0,
+            RenderTextureFormat.Default,
+            RenderTextureReadWrite.sRGB
+        );
+
+        Graphics.Blit(source, rt);
+
+        // Backup the currently active RenderTexture
+        RenderTexture previous = RenderTexture.active;
+        RenderTexture.active = rt;
+
+        // Create new readable texture and copy pixels
+        Texture2D readable = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
+        readable.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        readable.Apply();
+
+        // Restore and clean up
+        RenderTexture.active = previous;
+        RenderTexture.ReleaseTemporary(rt);
+
+        return readable;
     }
 
     public static Sprite LoadSprite(string fileName, bool isThumbnail)

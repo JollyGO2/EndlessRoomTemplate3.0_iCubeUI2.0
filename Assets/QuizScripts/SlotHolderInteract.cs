@@ -5,7 +5,7 @@ using System.IO;
 using System.Web;
 using UnityEditor;
 using Unity.VisualScripting;
-using UnityEditor.VersionControl;
+//using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -77,6 +77,7 @@ public class SlotHolderInteract : MonoBehaviour
 
     private void SaveImage(Sprite image)
     {
+        /*
         // Get the project-relative path (e.g. "Assets/Textures/file.png")
         string assetPath = AssetDatabase.GetAssetPath(image);
 
@@ -88,6 +89,9 @@ public class SlotHolderInteract : MonoBehaviour
         Debug.Log("Full Path: " + absolutePath);
 
         slotImage.gameObject.GetComponent<CanvasOpenVideoAndImage>().TestPath(absolutePath);
+        */
+
+        slotImage.gameObject.GetComponent<CanvasOpenVideoAndImage>().SpriteToFilePath(image);
     }
 
     private void resetSaveImage()

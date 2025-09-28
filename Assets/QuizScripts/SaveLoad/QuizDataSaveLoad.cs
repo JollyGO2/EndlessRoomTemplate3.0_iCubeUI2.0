@@ -87,6 +87,8 @@ public class QuizDataSaveLoad : MonoBehaviour
 
             Debug.Log(ES3.Load<string>("BGM", saveFile));
             FindObjectOfType<EditorManager>().bgmFileName = ES3.Load<string>("BGM", saveFile);
+            FindObjectOfType<EditorManager>().totalTime = ES3.Load<int>("totalTime", saveFile);
+            FindObjectOfType<EditorManager>().passingScore = ES3.Load<int>("passingScore", saveFile);
 
             CopyFiles(userDir, dataDir);
 
@@ -170,7 +172,10 @@ public class QuizDataSaveLoad : MonoBehaviour
         }
 
 
-        ES3.Save("BGM", FindObjectOfType<EditorManager>().bgmFileName, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
+        ES3.Save("BGM", FindObjectOfType<EditorManager>().bgmFileName, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER")); //Saving specifically BGM to project
+
+        ES3.Save("totalTime", FindObjectOfType<EditorManager>().totalTime, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
+        ES3.Save("passingScore", FindObjectOfType<EditorManager>().passingScore, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
 
         CopyFiles(saveDir, userDir);
 
@@ -313,6 +318,7 @@ public class QuizDataSaveLoad : MonoBehaviour
 
     public void DeleteDir()
     {
+        /*
         string originalPathToDelete = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName);
         foreach (string fileName in Directory.GetFiles(originalPathToDelete))
         {
@@ -339,6 +345,24 @@ public class QuizDataSaveLoad : MonoBehaviour
         }
 
         Directory.Delete(originalPathToDelete);
+        */
 
+        string projectPath = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName);
+
+        if (!Directory.Exists(projectPath))
+        {
+            Debug.LogWarning($" Directory not found: {projectPath}");
+            return;
+        }
+
+        try
+        {
+            Directory.Delete(projectPath, true); // true = recursive delete
+            Debug.Log($" Deleted project directory: {projectPath}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($" Failed to delete directory: {ex.Message}");
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using TMPro;
+using Unity.Properties;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,6 +96,9 @@ public class SlideManager : MonoBehaviour
     public TMP_Text timer;
     public TMP_InputField timerInput;
     public TMP_InputField passingTextInput;
+    [SerializeField] GameObject PrevSlide;
+    [SerializeField] GameObject nextSlide;
+
 
 
     private void Start()
@@ -414,6 +418,7 @@ public class SlideManager : MonoBehaviour
         b.onClick.AddListener(delegate { ToSlide(b); });
         b.transform.parent.GetComponentInChildren<TMP_Text>().text = (currentSlide - 1).ToString();
         upButton.SetActive(true);
+        PrevSlide.SetActive(true);
 
         SlidesData.instance.DataUpdate(this);
 
@@ -530,7 +535,6 @@ public class SlideManager : MonoBehaviour
             case 0:
                 slidesList[currentSlide].choiceCount = 2;
                 break;
-
             case 1:
                 slidesList[currentSlide].choiceCount = 3;
                 break;
@@ -842,7 +846,7 @@ public class SlideManager : MonoBehaviour
             IfBlank(man);
         }
 
-        //ChangeNavButtons();
+        ChangeNavButtons();
 
 
 
@@ -861,14 +865,13 @@ public class SlideManager : MonoBehaviour
             case 2:
                 answerCount.value = 0;
                 break;
-            case 4:
+            case 3:
                 answerCount.value = 1;
                 break;
-            case 6:
+            case 4:
                 answerCount.value = 2;
                 break;
-
-            case 8:
+            case 5:
                 answerCount.value = 3;
                 break;
 
@@ -1026,49 +1029,62 @@ public class SlideManager : MonoBehaviour
 
     void ChangeNavButtons()
     {
-
-
         int buttonon = 0;
         //next, finish, back buttons
         if (slidesList.Count == 1)
         {
             buttonon = 3;
-            addSlideButton.SetActive(true);
-            downButton.SetActive(false);
-            upButton.SetActive(false);
-            deleteSlideButton.SetActive(false);
+            //addSlideButton.SetActive(true);
+            //downButton.SetActive(false);
+            //upButton.SetActive(false);
+
+            nextSlide.SetActive(false);
+            PrevSlide.SetActive(false);
+
+            //deleteSlideButton.SetActive(false);
+            deleteSlideButton.GetComponent<Button>().interactable = false;
         }
         else
         {
             deleteSlideButton.SetActive(true);
+            deleteSlideButton.GetComponent<Button>().interactable = true;
             if (currentSlide == 0)
             {
                 buttonon = 0;
-                addSlideButton.SetActive(false);
-                downButton.SetActive(true);
-                upButton.SetActive(false);
+                //addSlideButton.SetActive(false);
+                //downButton.SetActive(true);
+                //upButton.SetActive(false);
+
+                nextSlide.SetActive(true);
+                PrevSlide.SetActive(false);
             }
             else if (currentSlide == slidesList.Count - 1)
             {
                 buttonon = 2;
-                downButton.SetActive(false);
-                upButton.SetActive(true);
+                //downButton.SetActive(false);
+                //upButton.SetActive(true);
+
+                nextSlide.SetActive(false);
+                PrevSlide.SetActive(true);
 
                 if (slidesList.Count >= 99)
                 {
-                    addSlideButton.SetActive(false);
+                    //addSlideButton.SetActive(false);
                 }
                 else
                 {
-                    addSlideButton.SetActive(true);
+                    //addSlideButton.SetActive(true);
                 }
             }
             else
             {
                 buttonon = 1;
-                addSlideButton.SetActive(false);
-                downButton.SetActive(true);
-                upButton.SetActive(true);
+                //addSlideButton.SetActive(false);
+                //downButton.SetActive(true);
+                //upButton.SetActive(true);
+
+                nextSlide.SetActive(true);
+                PrevSlide.SetActive(true);
             }
         }
 
@@ -1077,7 +1093,7 @@ public class SlideManager : MonoBehaviour
             b.SetActive(false);
         }
 
-        quizNavButtons[buttonon].SetActive(true);
+        //quizNavButtons[buttonon].SetActive(true);
     }
 
     void IfBlank(SlideManager.Slides man)

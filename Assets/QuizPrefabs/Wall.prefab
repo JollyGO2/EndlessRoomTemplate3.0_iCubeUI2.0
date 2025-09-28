@@ -7801,6 +7801,8 @@ MonoBehaviour:
   timer: {fileID: 811240778516208818}
   timerInput: {fileID: 1843089901046702727}
   passingTextInput: {fileID: 6028955658453784588}
+  PrevSlide: {fileID: 5250381184661997402}
+  nextSlide: {fileID: 2816367016528992539}
 --- !u!1 &2710826516476224773
 GameObject:
   m_ObjectHideFlags: 0
