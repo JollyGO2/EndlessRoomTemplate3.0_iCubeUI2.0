@@ -1273,6 +1273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 7402248087564448463}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -3021,6 +3022,81 @@ MonoBehaviour:
   m_Spacing: {x: 85.03, y: 50}
   m_Constraint: 1
   m_ConstraintCount: 4
+--- !u!1 &1895780576789482225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6657299820049127229}
+  - component: {fileID: 5084110018916526679}
+  - component: {fileID: 5052143878063258372}
+  m_Layer: 5
+  m_Name: InactiveOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6657299820049127229
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1895780576789482225}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4856324319626703531}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -0.000041723}
+  m_SizeDelta: {x: 1280, y: 800}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5084110018916526679
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1895780576789482225}
+  m_CullTransparentMesh: 1
+--- !u!114 &5052143878063258372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1895780576789482225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 8d47a1cd4e2bd19469a7ce00debfa584, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1897605381506343530
 GameObject:
   m_ObjectHideFlags: 0
@@ -3321,6 +3397,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3499873894575310224}
+  - {fileID: 6657299820049127229}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3365,6 +3442,9 @@ MonoBehaviour:
   passingScore: 70
   TimerText: {fileID: 7172450869483194026}
   totalTime: 10
+  InactiveOverlay: {fileID: 5052143878063258372}
+  totalInactiveTime: 10
+  totalGrayscaleTime: 5
   proceduralBG: {fileID: 8993901613477162703}
   correctAudio: {fileID: 8300000, guid: 8382a089c6ca2994c87a87aba4cb735c, type: 3}
   wrongAudio: {fileID: 8300000, guid: ca0ecbfc9ad31084bb269e30d080c6e6, type: 3}
@@ -3744,6 +3824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 1292326040739311690}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -5398,6 +5479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 222969981469411277}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -7710,6 +7792,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 7810187589532028648}
   maxPressTime: 1
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls:
@@ -10457,6 +10540,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 7742650059553628779}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -12894,6 +12978,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 8851014858146260997}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -12990,6 +13075,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 6767218395075664223}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -13420,6 +13506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indicator: {fileID: 1833339514464603657}
   maxPressTime: 2
+  pulsingUI: {fileID: 0}
   afterPress:
     m_PersistentCalls:
       m_Calls: []
@@ -16421,11 +16508,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8327188264311552115, guid: 38ca8e086195b9941a47fae73d16b318, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -824
+      value: -932
       objectReference: {fileID: 0}
     - target: {fileID: 8327188264311552115, guid: 38ca8e086195b9941a47fae73d16b318, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -42
+      value: -35
       objectReference: {fileID: 0}
     - target: {fileID: 8327188264311552115, guid: 38ca8e086195b9941a47fae73d16b318, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

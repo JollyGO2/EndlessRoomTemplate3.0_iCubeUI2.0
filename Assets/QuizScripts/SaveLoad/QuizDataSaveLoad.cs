@@ -89,6 +89,7 @@ public class QuizDataSaveLoad : MonoBehaviour
             FindObjectOfType<EditorManager>().bgmFileName = ES3.Load<string>("BGM", saveFile);
             FindObjectOfType<EditorManager>().totalTime = ES3.Load<int>("totalTime", saveFile);
             FindObjectOfType<EditorManager>().passingScore = ES3.Load<int>("passingScore", saveFile);
+            FindObjectOfType<EditorManager>().isSaved = ES3.Load<bool>("isSaved", saveFile);
 
             CopyFiles(userDir, dataDir);
 
@@ -176,6 +177,8 @@ public class QuizDataSaveLoad : MonoBehaviour
 
         ES3.Save("totalTime", FindObjectOfType<EditorManager>().totalTime, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
         ES3.Save("passingScore", FindObjectOfType<EditorManager>().passingScore, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
+        FindObjectOfType<EditorManager>().isSaved = true;
+        ES3.Save("isSaved", FindObjectOfType<EditorManager>().isSaved, Path.Combine(saveDir, DataAcrossScenes.instance.projectName + ".ER"));
 
         CopyFiles(saveDir, userDir);
 

@@ -1,61 +1,99 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Web;
 using UnityEditor;
 using Unity.VisualScripting;
-//using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static ButtonPress;
 
-public class SlotHolderInteract : MonoBehaviour
+public class SlotHolderInteract : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Sprite placeholderImage;
 
     public Image slotImage;
     private bool imageSet = false;
+    [SerializeField] GameObject hoverObject;
+    [SerializeField] GameObject toolTipObject;
+    [SerializeField] PulsingUI pulsingUi;
+    [SerializeField] PulsingUI interactUIPulsing;
+    private Sprite spriteToCopy;
 
     // Start is called before the first frame update
     void Start()
     {
         var button = this.GetComponent<Button>();
         button.onClick.AddListener(OnClick);
-
+        hoverObject.SetActive(false);
+        toolTipObject.SetActive(false); 
+    }
+    public void SetInteractableRemoveButton(bool interactable)
+    {
+        GetComponent<Button>().interactable = interactable; //This needs to change 
     }
 
     private void OnTriggerEnter(Collider collision)
     {
-        Debug.Log("Triggered SlotHolder");
+        spriteToCopy = collision.GetComponent<Image>().sprite;
 
-        if (!imageSet)
-        {
-            Sprite image = collision.GetComponent<Image>().sprite;
+        if(interactUIPulsing != null) 
+            interactUIPulsing.SetPulsing(true);
 
-            if (slotImage.sprite != image)
-            {
-                imageSet = true;
-
-                UndoRedo.instance.Action();
-
-                slotImage.sprite = image;
-
-                //Saving Image Path
-                SaveImage(image);
-            }
-        }
+        if (pulsingUi != null)
+            pulsingUi.SetPulsing(false);
     }
+
+    private void OnTriggerExit(Collider collision)
+    {
+        spriteToCopy = null;
+
+        if (interactUIPulsing != null)
+            interactUIPulsing.SetPulsing(false);
+
+        if (pulsingUi != null)
+            pulsingUi.SetPulsing(true);
+    }
+
     void Update()
     {
         // Detect mouse button 0 (left click) up
         if (Input.GetMouseButtonUp(0))
         {
+            //Debug.LogWarning("Mouse Up");
             if (imageSet)
             {
                 imageSet = false;
             }
+
+            if (!imageSet && spriteToCopy)
+            {
+                Sprite image = spriteToCopy;
+
+                if (slotImage.sprite != image)
+                {
+                    imageSet = true;
+                    spriteToCopy = null;
+                    SetInteractableRemoveButton(true);
+
+                    if (interactUIPulsing != null)
+                        interactUIPulsing.SetPulsing(false);
+
+                    if (pulsingUi != null)
+                        pulsingUi.SetPulsing(false);
+
+                    UndoRedo.instance.Action();
+
+                    slotImage.sprite = image;
+
+                    //Saving Image Path
+                    SaveImage(image);
+                }
+            }
+        }
+
+        if (toolTipObject.activeInHierarchy)
+        {
+            toolTipObject.GetComponent<RectTransform>().position = Input.mousePosition; // offset
         }
     }
 
@@ -64,6 +102,13 @@ public class SlotHolderInteract : MonoBehaviour
         if (slotImage.sprite != placeholderImage) //imageSet
         {
             imageSet = false;
+            SetInteractableRemoveButton(false);
+
+            if (pulsingUi != null)
+                pulsingUi.SetPulsing(true);
+
+            hoverObject.SetActive(false);
+            toolTipObject.SetActive(false);
 
             UndoRedo.instance.Action();
 
@@ -99,4 +144,18 @@ public class SlotHolderInteract : MonoBehaviour
         slotImage.gameObject.GetComponent<CanvasOpenVideoAndImage>().RemoveImage();
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (GetComponent<Button>().interactable)
+        {
+            hoverObject.SetActive(true);
+            toolTipObject.SetActive(true);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        hoverObject.SetActive(false);
+        toolTipObject.SetActive(false);
+    }
 }

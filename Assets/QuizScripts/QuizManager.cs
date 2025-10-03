@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using TMPro;
 using Unity.VisualScripting;
@@ -12,7 +13,6 @@ using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.U2D;
 using UnityEngine.UI;
 using UnityEngine.Video;
-//using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class QuizManager : MonoBehaviour
 {
@@ -74,9 +74,20 @@ public class QuizManager : MonoBehaviour
     private float timeRemaining = 0;
     private bool startTimer = false;
     public float totalTime = 10;
+    private Color timerOriginalColor;
+    private bool timeRunningOut;
     public int NumOfRoomsVisited { get; private set; }
     public int correctVisits { get; private set; }
 
+    [Header("Inactive Addons")]
+    //Inactive Mechanics
+    [SerializeField] Image InactiveOverlay;
+    public float totalInactiveTime = 10;
+    public float totalGrayscaleTime = 5;
+    float idleTimer;
+    Coroutine inactiveCoroutine;
+
+    [Header("Background Addons")]
     [SerializeField] ProceduralBG proceduralBG;
 
     [Header("Music Addons")]
@@ -92,6 +103,25 @@ public class QuizManager : MonoBehaviour
                 timeRemaining -= Time.deltaTime; // subtract time
 
                 TimerText.text = FormatTime(timeRemaining);
+
+                if(timeRemaining < totalTime * 0.2 || timeRemaining <= 10 && !timeRunningOut)
+                {
+                    TimeRunningOut(true);
+                    timeRunningOut = true;
+                }
+
+                idleTimer -= Time.deltaTime;
+
+                // Check if idle
+                if (idleTimer <= 0)
+                {
+                    SetGrayscale(idleTimer);
+
+                    if (inactiveCoroutine == null && Math.Abs(idleTimer) >= totalGrayscaleTime) //Wait for screen to turn gray before minus points
+                    {
+                        inactiveCoroutine = StartCoroutine(PointDeductionOnActive());
+                    }
+                }
             }
             else
             {
@@ -100,6 +130,57 @@ public class QuizManager : MonoBehaviour
                 StartTimer(false);
             }
         }
+    }
+    private void TimeRunningOut(bool isRunningOut)
+    {
+        TimerText.GetComponent<PulsingUI>().SetPulsing(isRunningOut);
+        if (isRunningOut)
+        {
+            TimerText.color = new Color(196f / 255f, 58f / 255f, 58f / 255f, 1f);
+            FindObjectOfType<EditorManager>().GetComponent<AudioSource>().pitch = 1.3f; //Speed up Music
+        }
+        else
+        {
+            TimerText.color = timerOriginalColor;
+            FindObjectOfType<EditorManager>().GetComponent<AudioSource>().pitch = 1f;
+        }
+    }
+
+    IEnumerator PointDeductionOnActive()
+    {
+        while (true)
+        {
+            bool isWrong = true;
+            score--;
+
+            UpdateScore(score);
+            ScoringVis.ColorIndiciator(isWrong);
+
+            //PlaySound(isWrong);
+
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private void ResetInactivity()
+    {
+        idleTimer = totalInactiveTime; // reset timer
+
+        SetGrayscale(0); //Reset grayscale
+
+        if (inactiveCoroutine != null)
+        {
+            StopCoroutine(inactiveCoroutine);
+            inactiveCoroutine = null;
+        }
+    }
+
+    private void SetGrayscale(float time)
+    {
+        Color newTint = Color.white;
+        newTint.a = Mathf.Lerp(0, 1, Math.Abs(time) / totalGrayscaleTime);
+
+        InactiveOverlay.material.SetColor("_Color", newTint);
     }
 
     public string FormatTime(float timeInSeconds)
@@ -112,12 +193,15 @@ public class QuizManager : MonoBehaviour
 
     private void StartTimer(bool start)
     {
+        ResetInactivity();
+
         startTimer = start;
         timeRemaining = totalTime;
+        TimeRunningOut(false);
+        timeRunningOut = false;
     }
     public void Enable()
     {
-
         // setting choices number
         for (int i = 0; i < 8; i++)
         {
@@ -170,6 +254,14 @@ public class QuizManager : MonoBehaviour
             }
         }
 
+        timerOriginalColor = TimerText.color;
+
+        //  Create a unique instance of the material at runtime
+        Material runtimeMaterial = new Material(InactiveOverlay.material);
+
+        // Assign this unique instance to just this Image
+        InactiveOverlay.material = runtimeMaterial;
+
         score = 0;
         TimerText.transform.parent.gameObject.SetActive(true);
         correctVisits = 0;
@@ -183,6 +275,8 @@ public class QuizManager : MonoBehaviour
 
     public void QNNext(GameObject thisSlotCalled)
     {
+        ResetInactivity();
+
         if (slidesList.Count == 0)
         {
             return;
@@ -235,12 +329,14 @@ public class QuizManager : MonoBehaviour
         PlaySound(isWrong);
         thisSlotCalled.GetComponentInChildren<Toggle>().isOn = false;
 
+        /*
         if (score > passingScore)
         {
             Scoring();
             StartTimer(false);
             return;
         }
+        */
 
         //Pick Random Room
         PickRandomRoom(current);
@@ -803,6 +899,4 @@ public class QuizManager : MonoBehaviour
             Enable();
         }
     }
-
-
 }

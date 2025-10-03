@@ -96,8 +96,7 @@ public class SlideManager : MonoBehaviour
     public TMP_Text timer;
     public TMP_InputField timerInput;
     public TMP_InputField passingTextInput;
-    [SerializeField] GameObject PrevSlide;
-    [SerializeField] GameObject nextSlide;
+    [SerializeField] GameObject newSlideButton;
 
 
 
@@ -169,6 +168,37 @@ public class SlideManager : MonoBehaviour
     //text saving
     public void SaveANS(GameObject a)
     {
+        TMP_InputField inputField = a.GetComponentInChildren<TMP_InputField>();
+
+        if (string.IsNullOrEmpty(a.GetComponentInChildren<TMP_InputField>().text))
+        {
+            Debug.LogWarning("Input rejected and defaulted to 1");
+            inputField.text = "1";
+            inputField.onEndEdit.Invoke(inputField.text);
+            return;
+        }
+        else
+        {
+            int pScore;
+            string t = a.GetComponentInChildren<TMP_InputField>().text;
+            if (int.TryParse(t, out pScore))
+            {
+                Debug.Log("Converted to int: " + pScore);
+
+            }
+            else
+            {
+                Debug.LogWarning("Text is not a valid integer: " + t);
+            }
+
+            if(pScore < 1)
+            {
+                Debug.LogWarning("Input rejected and defaulted to 1");
+                inputField.text = "1";
+                inputField.onEndEdit.Invoke(inputField.text);
+                return;
+            }
+        }
 
         GameObject o = textChoices;
 
@@ -239,7 +269,7 @@ public class SlideManager : MonoBehaviour
     public void UpdateTimer(int time)
     {
         timer.text = FormatTime(time);
-        timerInput.SetTextWithoutNotify(timer.text);
+        timerInput.SetTextWithoutNotify(time + " s");
     }
 
     public void SavePassingScore(GameObject a)
@@ -417,14 +447,17 @@ public class SlideManager : MonoBehaviour
         slideButtonsList.Add(b);
         b.onClick.AddListener(delegate { ToSlide(b); });
         b.transform.parent.GetComponentInChildren<TMP_Text>().text = (currentSlide - 1).ToString();
-        upButton.SetActive(true);
-        PrevSlide.SetActive(true);
+        //upButton.SetActive(true);
 
         SlidesData.instance.DataUpdate(this);
 
         //ReloadSlide();
         ChangeAnsType(2);
         ChangeAnswerNum(1);
+
+        //MOVE
+        newSlideButton.transform.SetAsLastSibling();
+
     }
 
     public void UpSlide()
@@ -775,19 +808,22 @@ public class SlideManager : MonoBehaviour
                 {
                     if (textans.gameObject.activeInHierarchy)
                     {
-                        textans.transform.GetChild(i).GetComponentInChildren<TMP_InputField>().text = man.textAnswers[i];
+                        if(textans.transform.GetChild(i).GetComponentInChildren<TMP_InputField>() != null)
+                        {
+                            textans.transform.GetChild(i).GetComponentInChildren<TMP_InputField>().text = man.textAnswers[i];
+                        }
                     }
                 }
                 else
                 {
                     if (textans == bothChoices.transform)
                     {
-                        textans.GetChild(i).GetChild(3).GetComponent<TMP_InputField>().text = "";
+                        textans.GetChild(i).GetChild(3).GetComponentInChildren<TMP_InputField>().text = "";
 
                     }
                     else
                     {
-                        textans.GetChild(i).GetChild(2).GetComponent<TMP_InputField>().text = "";
+                        textans.GetChild(i).GetChild(2).GetComponentInChildren<TMP_InputField>().text = "";
                     }
                 }
 
@@ -805,12 +841,13 @@ public class SlideManager : MonoBehaviour
                                 //Debug.Log("No media for answer " + i);
                                 StartCoroutine(MediaLoader.SetupImage(mediaAnsHolder, defaultBG));
                                 mediaAnsHolder.GetChild(0).gameObject.SetActive(true);
-
+                                mediaAnsHolder.Find("RemoveButton").GetComponent<SlotHolderInteract>().SetInteractableRemoveButton(false);
                             }
                             else
                             {
                                 mediaAnsHolder.GetChild(0).gameObject.SetActive(false);
                                 StartCoroutine(MediaLoader.SetupImage(mediaAnsHolder, man.imageSprites[i]));
+                                mediaAnsHolder.Find("RemoveButton").GetComponent<SlotHolderInteract>().SetInteractableRemoveButton(true);
                             }
 
                         }
@@ -846,7 +883,7 @@ public class SlideManager : MonoBehaviour
             IfBlank(man);
         }
 
-        ChangeNavButtons();
+        //ChangeNavButtons();
 
 
 
@@ -1035,11 +1072,9 @@ public class SlideManager : MonoBehaviour
         {
             buttonon = 3;
             //addSlideButton.SetActive(true);
-            //downButton.SetActive(false);
-            //upButton.SetActive(false);
+            downButton.SetActive(false);
+            upButton.SetActive(false);
 
-            nextSlide.SetActive(false);
-            PrevSlide.SetActive(false);
 
             //deleteSlideButton.SetActive(false);
             deleteSlideButton.GetComponent<Button>().interactable = false;
@@ -1052,20 +1087,15 @@ public class SlideManager : MonoBehaviour
             {
                 buttonon = 0;
                 //addSlideButton.SetActive(false);
-                //downButton.SetActive(true);
-                //upButton.SetActive(false);
+                downButton.SetActive(true);
+                upButton.SetActive(false);
 
-                nextSlide.SetActive(true);
-                PrevSlide.SetActive(false);
             }
             else if (currentSlide == slidesList.Count - 1)
             {
                 buttonon = 2;
-                //downButton.SetActive(false);
-                //upButton.SetActive(true);
-
-                nextSlide.SetActive(false);
-                PrevSlide.SetActive(true);
+                downButton.SetActive(false);
+                upButton.SetActive(true);
 
                 if (slidesList.Count >= 99)
                 {
@@ -1080,11 +1110,9 @@ public class SlideManager : MonoBehaviour
             {
                 buttonon = 1;
                 //addSlideButton.SetActive(false);
-                //downButton.SetActive(true);
-                //upButton.SetActive(true);
+                downButton.SetActive(true);
+                upButton.SetActive(true);
 
-                nextSlide.SetActive(true);
-                PrevSlide.SetActive(true);
             }
         }
 
@@ -1131,8 +1159,6 @@ public class SlideManager : MonoBehaviour
 
                 StartCoroutine(MediaLoader.SetupImage(blankImageInput.transform, null));
 
-
-
                 blankTextInput.text = man.questionText;
 
                 if (!String.IsNullOrEmpty(man.questionText))
@@ -1158,5 +1184,4 @@ public class SlideManager : MonoBehaviour
 
         ReloadSlide();
     }
-
 }

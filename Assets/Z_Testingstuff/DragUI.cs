@@ -22,6 +22,7 @@ public class DragUI : MonoBehaviour, IDragHandler
     private bool cloneSpawn = false;
     public GameObject clonePrefab;
     private GameObject cloneRef;
+    [SerializeField] PulsingUI pulsingUI;
 
     private void Start()
     {
@@ -49,6 +50,8 @@ public class DragUI : MonoBehaviour, IDragHandler
     {
         FindObjectOfType<SlideManager>().currentSlide = transform.GetSiblingIndex();
         FindObjectOfType<SlideManager>().ReloadSlide();
+        if(pulsingUI != null)
+            pulsingUI.SetPulsing(false);
     }
 
     public void OnDrag(PointerEventData data)
@@ -137,6 +140,9 @@ public class DragUI : MonoBehaviour, IDragHandler
         GetComponent<BoxCollider>().isTrigger = true;
         moving = false;
         Debug.Log("Released mouse");
+
+        if (pulsingUI != null)
+            pulsingUI.SetPulsing(true);
 
         if (!isTool)
         {

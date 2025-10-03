@@ -10,6 +10,7 @@ public class ButtonPressHold : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 {
     public Image indicator;
     public float maxPressTime;
+    [SerializeField] PulsingUI pulsingUI;
 
 
     [Serializable]
@@ -22,6 +23,9 @@ public class ButtonPressHold : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     public void OnPointerDown(PointerEventData eventData)
     {
         buttonPressed = true;
+
+        if(pulsingUI != null)
+            pulsingUI.SetPulsing(false);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -29,6 +33,9 @@ public class ButtonPressHold : MonoBehaviour, IPointerDownHandler, IPointerUpHan
         buttonPressed = false;
 
         OffIndicator();
+
+        if (pulsingUI != null)
+            pulsingUI.SetPulsing(true);
     }
 
 
