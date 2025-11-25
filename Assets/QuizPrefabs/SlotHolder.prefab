@@ -124,6 +124,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkedColor: {r: 0.5377357, g: 1, b: 0.5377357, a: 1}
   unCheckedColor: {r: 1, g: 0.49371064, b: 0.49371064, a: 1}
+  checkSound: {fileID: 8300000, guid: f74824ea0f0f50d4cba71585143d9e8e, type: 3}
+  unCheckSound: {fileID: 8300000, guid: d2564c85707220b4d956694da9df56f1, type: 3}
 --- !u!1 &983124709370277819
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,6 +714,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPulsing: 1
   pulsingSpeed: 5
+  maxScale: 0.05
+  minScale: 0.05
 --- !u!1 &4107057876710087017
 GameObject:
   m_ObjectHideFlags: 0
@@ -1376,6 +1380,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPulsing: 0
   pulsingSpeed: 10
+  maxScale: 0.05
+  minScale: 0.05
 --- !u!1 &6819202025905383878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1878,6 +1884,8 @@ MonoBehaviour:
   toolTipObject: {fileID: 983124709370277819}
   pulsingUi: {fileID: 4070892885218240026}
   interactUIPulsing: {fileID: 9138300813717875223}
+  itemPopInSound: {fileID: 8300000, guid: f74824ea0f0f50d4cba71585143d9e8e, type: 3}
+  itemRemoveSound: {fileID: 8300000, guid: d2564c85707220b4d956694da9df56f1, type: 3}
 --- !u!65 &4656408827387275001
 BoxCollider:
   m_ObjectHideFlags: 0

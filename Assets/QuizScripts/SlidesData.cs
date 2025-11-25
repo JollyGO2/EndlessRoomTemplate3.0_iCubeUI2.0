@@ -274,7 +274,7 @@ public class SlidesData : MonoBehaviour
 
         //slideManagersData[copyToThis].slidesData = new List<Slides>(slideManagersData[copyFromThis].slidesData);
 
-        string path = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, "Duplicating.quiz");
+        string path = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName, "Duplicating.ER");
         ES3.Save("Duplicating", slideManagersData[copyFromThis].slidesData,path);
 
         slideManagersData[copyToThis].slidesData = ES3.Load <List<Slides>>("Duplicating",path);
@@ -287,72 +287,77 @@ public class SlidesData : MonoBehaviour
     public void DataUpdate(SlideManager slideManager)
     {
         List<Slides> slideList =  slideManagersData[Array.IndexOf(managers, slideManager)].slidesData;
-        //Debug.Log("Data Update Called, Slide data slides count is " + slideManagersData[Array.IndexOf(managers, slideManager)].slidesData.Count + ", Slide manager count" + slideManager.slidesList.Count);
-      
+        //Debug.LogWarning("Data Update Called, Slide data slides count is " + slideManagersData[Array.IndexOf(managers, slideManager)].slidesData.Count + ", Slide manager count" + slideManager.slidesList.Count);
 
         while (slideManagersData[Array.IndexOf(managers, slideManager)].slidesData.Count < slideManager.slidesList.Count)
         {
-            
+
             slideManagersData[Array.IndexOf(managers, slideManager)].slidesData.Add(new Slides());
         }
-        
-
-        for (int i = 0; i < slideManager.slidesList.Count; i++)
-        {
-            slideList[i].correctAnswers = slideManager.slidesList[i].correctAnswers;
-
-            slideList[i].textAnswers = slideManager.slidesList[i].textAnswers;
-            slideList[i].questionText = slideManager.slidesList[i].questionText;
-
-            //Debug.Log("aaaa before dataupdate" + slideList[i].slideType + " slide " + i);
-            if (slideManager.slidesList[i].slideType == SlideManager.Slides.Type.text)
-            {
-                slideList[i].slideType = Slides.Type.text;
-            }
-            else if (slideManager.slidesList[i].slideType == SlideManager.Slides.Type.image)
-            {
-                slideList[i].slideType = Slides.Type.image;
-            }
-            else if (slideManager.slidesList[i].slideType == SlideManager.Slides.Type.both)
-            {
-                slideList[i].slideType = Slides.Type.both;
-            }
-            else
-            {
-                slideList[i].slideType = Slides.Type.blank;
-            }
-            //Debug.Log("aaaa dataupdate" + slideList[i].slideType + " slide " + i);
 
 
-            slideList[i].choiceCount = slideManager.slidesList[i].choiceCount;
+            for (int i = 0; i < slideManager.slidesList.Count; i++)
+            {
+                slideList[i].correctAnswers = slideManager.slidesList[i].correctAnswers;
 
-            while (slideList[i].mediaAnswersPath.Count < slideList[i].choiceCount)
-            {
-                slideList[i].mediaAnswersPath.Add(null);
-            }
-            while (slideList[i].mediaAnswersPath.Count > slideList[i].choiceCount)
-            {
-                slideList[i].mediaAnswersPath.RemoveAt(slideList[i].mediaAnswersPath.Count-1);
-            }
+                slideList[i].textAnswers = slideManager.slidesList[i].textAnswers;
+                slideList[i].questionText = slideManager.slidesList[i].questionText;
 
-            while (slideList[i].textAnswers.Count < slideList[i].choiceCount)
-            {
-                slideList[i].textAnswers.Add(null);
-            }
-            while (slideList[i].textAnswers.Count > slideList[i].choiceCount)
-            {
-                slideList[i].textAnswers.RemoveAt(slideList[i].textAnswers.Count - 1);
-            }
+                //Debug.Log("aaaa before dataupdate" + slideList[i].slideType + " slide " + i);
+                if (slideManager.slidesList[i].slideType == SlideManager.Slides.Type.text)
+                {
+                    slideList[i].slideType = Slides.Type.text;
+                }
+                else if (slideManager.slidesList[i].slideType == SlideManager.Slides.Type.image)
+                {
+                    slideList[i].slideType = Slides.Type.image;
+                }
+                else if (slideManager.slidesList[i].slideType == SlideManager.Slides.Type.both)
+                {
+                    slideList[i].slideType = Slides.Type.both;
+                }
+                else
+                {
+                    slideList[i].slideType = Slides.Type.blank;
+                }
+                //Debug.Log("aaaa dataupdate" + slideList[i].slideType + " slide " + i);
 
-            while (slideList[i].correctAnswers.Count < slideList[i].choiceCount)
-            {
-                slideList[i].correctAnswers.Add(false);
+
+                slideList[i].choiceCount = slideManager.slidesList[i].choiceCount;
+
+                while (slideList[i].mediaAnswersPath.Count < slideList[i].choiceCount)
+                {
+                    slideList[i].mediaAnswersPath.Add(null);
+                }
+                while (slideList[i].mediaAnswersPath.Count > slideList[i].choiceCount)
+                {
+                    slideList[i].mediaAnswersPath.RemoveAt(slideList[i].mediaAnswersPath.Count - 1);
+                }
+
+                while (slideList[i].textAnswers.Count < slideList[i].choiceCount)
+                {
+                    slideList[i].textAnswers.Add(null);
+                }
+                while (slideList[i].textAnswers.Count > slideList[i].choiceCount)
+                {
+                    slideList[i].textAnswers.RemoveAt(slideList[i].textAnswers.Count - 1);
+                }
+
+                while (slideList[i].correctAnswers.Count < slideList[i].choiceCount)
+                {
+                    slideList[i].correctAnswers.Add(false);
+                }
+                while (slideList[i].correctAnswers.Count > slideList[i].choiceCount)
+                {
+                    slideList[i].correctAnswers.RemoveAt(slideList[i].correctAnswers.Count - 1);
+                }
             }
-            while (slideList[i].correctAnswers.Count > slideList[i].choiceCount)
-            {
-                slideList[i].correctAnswers.RemoveAt(slideList[i].correctAnswers.Count - 1);
-            }
-        }
+    }
+
+    public void DataUpdateAfterDeletion(SlideManager slideManager, int indexOfSlideToRemove)
+    {
+        slideManagersData[Array.IndexOf(managers, slideManager)].slidesData.RemoveAt(indexOfSlideToRemove);
+        DataUpdate(slideManager);
     }
 
     public void MoveSlides(SlideManager slideManager, int whichMoved, int toWhere)

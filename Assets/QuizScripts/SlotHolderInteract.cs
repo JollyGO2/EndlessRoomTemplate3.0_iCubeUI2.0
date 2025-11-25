@@ -19,6 +19,10 @@ public class SlotHolderInteract : MonoBehaviour, IPointerEnterHandler, IPointerE
     [SerializeField] PulsingUI interactUIPulsing;
     private Sprite spriteToCopy;
 
+    [Header("Sound FX")]
+    [SerializeField] AudioClip itemPopInSound;
+    [SerializeField] AudioClip itemRemoveSound;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -136,11 +140,13 @@ public class SlotHolderInteract : MonoBehaviour, IPointerEnterHandler, IPointerE
         slotImage.gameObject.GetComponent<CanvasOpenVideoAndImage>().TestPath(absolutePath);
         */
 
+        FindObjectOfType<EditorManager>().GetComponent<AudioSource>().PlayOneShot(itemPopInSound);
         slotImage.gameObject.GetComponent<CanvasOpenVideoAndImage>().SpriteToFilePath(image);
     }
 
     private void resetSaveImage()
     {
+        FindObjectOfType<EditorManager>().GetComponent<AudioSource>().PlayOneShot(itemRemoveSound);
         slotImage.gameObject.GetComponent<CanvasOpenVideoAndImage>().RemoveImage();
     }
 

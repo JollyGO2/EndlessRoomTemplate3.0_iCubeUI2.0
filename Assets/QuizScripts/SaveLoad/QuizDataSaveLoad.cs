@@ -12,6 +12,8 @@ public class QuizDataSaveLoad : MonoBehaviour
 
     public List<Sprite> placeholderImages = new List<Sprite>();
 
+    [SerializeField] GameObject SaveCompleteScreenPrefab;
+
     void Start()
     {
         StartCoroutine(WaitForInstances());
@@ -23,7 +25,6 @@ public class QuizDataSaveLoad : MonoBehaviour
         Debug.Log("Got datapersistence instance");
         yield return SlidesData.instance;
         Loading();
-
         
     }
 
@@ -49,7 +50,6 @@ public class QuizDataSaveLoad : MonoBehaviour
         if (!File.Exists(saveFile))
         {
 
-
             foreach (SlideManager slideManager in SlidesData.instance.managers)
             {
                 SlidesData.instance.DataUpdate(slideManager);
@@ -74,7 +74,6 @@ public class QuizDataSaveLoad : MonoBehaviour
 
             SlidesData.instance.LoadData();
             Debug.Log("No save file for Project" + DataAcrossScenes.instance.projectDetails + " found.");
-
         }
         else
         {
@@ -189,7 +188,6 @@ public class QuizDataSaveLoad : MonoBehaviour
     public void CopyFiles(string fromDir, string toDir)
     {
 
-
         string copyQuizFrom = Path.Combine(fromDir, DataAcrossScenes.instance.projectName + ".ER");
         string copyQuizTo = Path.Combine(toDir, DataAcrossScenes.instance.projectName + ".ER");
 
@@ -199,8 +197,6 @@ public class QuizDataSaveLoad : MonoBehaviour
         }
 
         File.Copy(copyQuizFrom, copyQuizTo);
-
-
 
 
         //Image saving
@@ -306,17 +302,17 @@ public class QuizDataSaveLoad : MonoBehaviour
         }
 
         File.Copy(copyFrom, copyTo);
+
+        SaveCompleteScreenPrefab.SetActive(true);
     }
+
 
     private void OnApplicationQuit()
     {
-
         //string dataPath = Path.Combine(Application.persistentDataPath, DataAcrossScenes.instance.projectName);
-
         // StartCoroutine(DeleteDir(dataPath));
 
         DeleteDir();
-
     }
 
     public void DeleteDir()
