@@ -93,6 +93,9 @@ public class SlideManager : MonoBehaviour
 
     [Header("Addons")]
     public GameObject dubWallButton;
+    public TMP_Text timer;
+    public TMP_InputField timerInput;
+    public TMP_InputField passingTextInput;
     [SerializeField] GameObject newSlideButton;
 
 
@@ -245,6 +248,49 @@ public class SlideManager : MonoBehaviour
             Debug.LogWarning("Text is not a valid integer: " + t);
         }
 
+    }
+
+    public string FormatTime(float timeInSeconds)
+    {
+        int minutes = Mathf.FloorToInt(timeInSeconds / 60f);
+        int seconds = Mathf.FloorToInt(timeInSeconds % 60f);
+
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    //text saving
+    public void SaveTimer(GameObject a)
+    {
+
+        int time;
+        string t = a.GetComponent<TMP_InputField>().text;
+
+        if (int.TryParse(t, out time))
+        {
+            Debug.Log("Converted to int: " + time);
+            UndoRedo.instance.Action(); //Save previous state first
+
+            SetTimer(time);
+
+        }
+        else
+        {
+            Debug.LogWarning("Text is not a valid integer: " + t);
+        }
+
+    }
+
+    public void SetTimer(int time)
+    {
+        //Update Timer
+        FindObjectOfType<EditorManager>().totalTime = time;
+        ReloadSlide();
+    }
+
+    public void UpdateTimer(int time)
+    {
+        timer.text = FormatTime(time);
+        timerInput.SetTextWithoutNotify(time + " s");
     }
 
     //correct/wrong saving
